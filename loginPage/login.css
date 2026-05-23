@@ -1,0 +1,126 @@
+body{
+    background-color: #DBFEDD;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+    flex-direction: column;
+    font-family: 'Inter', sans-serif;
+}
+
+.logo-section{
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#logo-subtext {
+    color: #00885D;
+    font-weight: bold;
+}
+
+.logo {
+    width: 80px;
+    height: auto;
+}
+
+.login-card{
+    background-color: white;
+    padding: 4rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+.tab-button {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.login-tab {
+    background-color: #2C3D2B;
+    padding: 15px;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 150px;
+    font-weight: bold;
+}
+
+.register-tab {
+    background-color: #DBFEDD;
+    padding: 15px;
+    color: #2C3D2B;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 150px;
+    font-weight: bold;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+    margin-bottom: 0px;
+    padding-top: 10px;
+}
+
+label{
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+input[type="email"],
+input[type="password"] {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+
+.option-row {
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#checkbox {
+    margin-right: 10px;
+}
+
+.remember-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+#forgot-password-link {
+    color: #456F41;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+#login-button {
+   background-color: #456F41;
+   padding: 15px;
+   margin-top: 20px;
+   margin-bottom: 10px;
+   border: none;
+   border-radius: 10px;
+   color: white;
+   font-weight: bold;
+   cursor: pointer;
+}
+
+#dont-have-account {
+    text-align: end;
+    margin-top: 10px;
+}
+
+#sign-up-text {
+    color: #456F41;
+}
