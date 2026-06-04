@@ -1,0 +1,175 @@
+.top-nav {
+    background-color: #2C3D2B;
+    color: white;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 10px;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+}
+
+.content {
+    align-items: center;
+    display: flex;
+    margin-left: 50px;
+}
+
+.content p {
+    margin: 20px;
+    color: #DBFEDD;
+}
+
+.profile-pic {
+    margin-right: 50px;
+    width: 45px;
+    height: 45px;
+}
+
+.side-nav {
+    background-color: white;
+    border-right: 1px solid #D5D5D5;
+    padding: 30px 20px;
+}
+
+.side-nav a {
+    color: #2C3D2B;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 15px;
+    border-radius: 15px;
+    display: block;
+}
+
+.side-nav a:hover {
+    color: #DBFEDD;
+    background-color: #2C3D2B;
+}
+
+.side-nav a.active {
+    color: #fafafa;
+    background-color: #2C3D2B;
+}
+
+.side-nav li {
+    margin-bottom: 30px;
+}
+
+.side-nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.main-content h3 {
+    margin: 0 0 20px 0;
+    color: #2C3D2B;
+}
+
+.search-bar {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.search-bar input {
+    width: 70%;
+    padding: 12px 15px;
+    border: 1px solid #2C3D2B;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+.filters {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.filter {
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 1px solid #2C3D2B;
+    background-color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.filter.active {
+    background-color: #EAF6EA;
+}
+
+.filter-btn {
+    background-color: #EAF6EA;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.expense-list p {
+    margin: 15px 0 10px 0;
+    color: #2C3D2B;
+    font-weight: bold;
+}
+
+.expense-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #D5D5D5;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: white;
+}
+
+.expense-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.expense-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #EAF6EA;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    font-size: 24px;
+}
+
+.expense-item p {
+    margin-right: 20px;
+}
+
+.category {
+    margin: 0;
+    font-weight: bold;
+    color: #2C3D2B;
+}
+
+.subtext {
+    margin: 0;
+    font-size: 13px;
+    color: gray;
+}
+
+.amount {
+    color: red;
+    font-weight: bold;
+}
+
+html,
+body {
+    margin: 0;
+    /* remove default margins */
+    overflow-x: hidden;
+    /* hide horizontal scrollbar */
+}

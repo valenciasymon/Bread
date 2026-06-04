@@ -1,0 +1,192 @@
+.top-nav {
+    background-color: #2C3D2B;
+    color: white;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 10px;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+}
+
+.content {
+    align-items: center;
+    display: flex;
+    margin-left: 50px;
+}
+
+.content p {
+    margin: 20px;
+    color: #DBFEDD;
+}
+
+.profile-pic {
+    margin-right: 50px;
+    width: 45px;
+    height: 45px;
+}
+
+.side-nav {
+    background-color: white;
+    border-right: 1px solid #D5D5D5;
+    padding: 30px 20px;
+}
+
+.side-nav a {
+    color: #2C3D2B;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 15px;
+    border-radius: 15px;
+    display: block;
+}
+
+.side-nav a:hover {
+    color: #DBFEDD;
+    background-color: #2C3D2B;
+}
+
+.side-nav a.active {
+    color: #fafafa;
+    background-color: #2C3D2B;
+}
+
+.side-nav li {
+    margin-bottom: 30px;
+}
+
+.side-nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.main-content h3 {
+    color: #2C3D2B;
+    margin-bottom: 10px;
+    margin-left: 40px;
+}
+
+.main-content p {
+    color: #2C3D2B;
+    margin-top: 0;
+    font-size: 15px;
+    margin-bottom: 20px;
+    margin-left: 40px;
+}
+
+.first-row {
+    display: flex;
+    gap: 7rem;
+    margin-bottom: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.second-row {
+    display: flex;
+    gap: 7rem;
+    flex-wrap: wrap;
+    margin-left: 50px;
+}
+
+.card {
+    width: 300px;
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header h4 {
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+}
+
+.icon-box {
+    width: 40px;
+    height: 40px;
+
+    background: #b8ffb8;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 10px;
+}
+
+.card-body h1 {
+    margin: 0;
+    font-size: 38px;
+    font-weight: bold;
+}
+
+.card-footer p {
+    margin: 0;
+    font-size: 12px;
+    color: gray;
+}
+
+.icon-box img {
+    width: 40px;
+    height: 40px;
+}
+
+.expense-card {
+    width: 50%;
+    height: 350px;
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: space-between;
+    margin-left: 40px;
+}
+
+.category-card {
+    width: 30%;
+    height: 350px;
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+
+html,
+body {
+    margin: 0;
+    /* remove default margins */
+    overflow-x: hidden;
+    /* hide horizontal scrollbar */
+}
+

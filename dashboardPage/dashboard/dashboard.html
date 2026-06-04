@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="../CSS/dashboard.css">
+    <link rel="stylesheet" href="../CSS/global.css">
+</head>
+
+<body>
+
+    <nav>
+        <div class="top-nav">
+            <div class="content">
+                <img src="../assets/bread-logo.svg" alt="Logo" class="logo">
+                <p>Bread</p>
+            </div>
+            <img src="../assets/profilebread.png" alt="Profile Picture" class="profile-pic">
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <nav>
+            <div class="side-nav">
+                <ul>
+                    <li><a href="#" class="active">Dashboard</a></li>
+                    <li><a href="../history/history.html">History</a></li>
+                    <li><a href="../add expense/addExpense.html">Add Expense</a></li>
+                    <li><a href="../analytics/analytics.html">Analytics</a></li>
+                    <li><a href="../profile/profile.html">Profile</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <h3>Welcome back, User!</h3>
+            <p>Here's your finance overview</p>
+
+            <div class="first-row">
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Total Balance</h4>
+
+                        <div class="icon-box">
+                            <img src="../assets/walletIcon.svg" alt="Wallet Icon" class="card-icon">
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <h1>₱00000.00</h1>
+                    </div>
+
+                    <div class="card-footer">
+                        <p>+0% from last month</p>
+                    </div>
+
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Monthly Expenses</h4>
+
+                        <div class="icon-box">
+                            <img src="../assets/calendarIcon.svg" alt="Wallet Icon" class="card-icon">
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <h1>₱00000.00</h1>
+                    </div>
+
+                    <div class="card-footer">
+                        <p>+0% from last month</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Remaining Budget</h4>
+
+                        <div class="icon-box">
+                            <img src="../assets/piechartIcon.svg" alt="Wallet Icon" class="card-icon">
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <h1>₱00000.00</h1>
+                    </div>
+
+                    <div class="card-footer">
+                        <p>+0% from last month</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="second-row">
+                <div class="expense-card">
+                    <div class="card-header">
+                        <h4>Expenses Weekly</h4>
+                    </div>
+                </div>
+
+                <div class="category-card">
+                    <div class="card-header">
+                        <h4>Expenses by category</h4>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

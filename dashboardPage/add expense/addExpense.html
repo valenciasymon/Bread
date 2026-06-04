@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Expense</title>
+    <link rel="stylesheet" href="../CSS/addExpense.css">
+    <link rel="stylesheet" href="../CSS/global.css">
+</head>
+
+<body>
+
+    <nav>
+        <div class="top-nav">
+            <div class="content">
+                <img src="../assets/bread-logo.svg" alt="Logo" class="logo">
+                <p>Bread</p>
+            </div>
+            <img src="../assets/profilebread.png" alt="Profile Picture" class="profile-pic">
+        </div>
+    </nav>
+
+    <div class="dashboard-layout">
+        <nav>
+            <div class="side-nav">
+                <ul>
+                    <li><a href="../dashboard/dashboard.html">Dashboard</a></li>
+                    <li><a href="../history/history.html">History</a></li>
+                    <li><a href="#" class="active">Add Expense</a></li>
+                    <li><a href="../analytics/analytics.html">Analytics</a></li>
+                    <li><a href="../profile/profile.html">Profile</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="main-content">
+            <h3>Add Expense</h3>
+
+            <form class="expense-form">
+
+                <!-- Amount -->
+                <div class="form-group">
+                    <label>AMOUNT</label>
+
+                    <div class="amount-box">
+                        <div class="peso-icon">₱</div>
+
+                        <input type="number" placeholder="00000.00" class="amount-field">
+                    </div>
+                </div>
+
+                <!-- Category and Date -->
+                <div class="row">
+
+                    <div class="form-group">
+                        <label>CATEGORY</label>
+
+                        <select>
+                            <option>Select Category</option>
+                            <option>Food</option>
+                            <option>Transportation</option>
+                            <option>Bills</option>
+                            <option>Shopping</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>DATE</label>
+
+                        <input type="date">
+                    </div>
+
+                </div>
+
+                <!-- Description -->
+                <div class="form-group">
+                    <label>DESCRIPTION</label>
+
+                    <textarea placeholder="Enter description..."></textarea>
+                </div>
+
+                <!-- Button -->
+                <button type="submit" class="save-btn">
+                    Save
+                </button>
+
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>

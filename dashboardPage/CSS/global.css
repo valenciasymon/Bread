@@ -1,0 +1,89 @@
+/* ===== GLOBAL VARIABLES ===== */
+
+:root {
+    --top-nav-height: 70px;
+    --side-nav-width: 240px;
+}
+
+/* ===== RESET ===== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    overflow-x: hidden;
+}
+
+/* ===== TOP NAV ===== */
+
+.top-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: var(--top-nav-height);
+
+    z-index: 1000;
+}
+
+/* ===== SIDEBAR ===== */
+
+.side-nav {
+    position: fixed;
+
+    top: var(--top-nav-height);
+    left: 0;
+
+    width: var(--side-nav-width);
+    height: calc(100vh - var(--top-nav-height));
+
+    overflow-y: auto;
+}
+
+/* ===== PAGE LAYOUT ===== */
+
+.dashboard-layout {
+    padding-top: var(--top-nav-height);
+}
+
+/* ===== MAIN CONTENT ===== */
+
+.main-content {
+    margin-left: var(--side-nav-width);
+    min-height: calc(100vh - var(--top-nav-height));
+
+    padding: 20px;
+}
+
+/* ===== TABLET ===== */
+
+@media (max-width: 1200px) {
+
+    .side-nav {
+        position: relative;
+
+        width: 100%;
+        height: auto;
+
+        top: 0;
+    }
+
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+}
+
+/* ===== MOBILE ===== */
+
+@media (max-width: 768px) {
+
+    .main-content {
+        padding: 15px;
+    }
+}
