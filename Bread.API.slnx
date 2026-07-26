@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Bread.API.Application/Bread.API.Application.csproj" />
+  <Project Path="Bread.API.Common/Bread.API.Common.csproj" />
+  <Project Path="Bread.API.Domain/Bread.API.Domain.csproj" />
+  <Project Path="Bread.API/Bread.API.csproj" />
+</Solution>

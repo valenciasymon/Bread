@@ -1,0 +1,22 @@
+@Bread.API_HostAddress = http://localhost:5273
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YzYwZTU2MC1jYWE5LTRiOGItYjNjNi05OWQ5NzcxMDQ1ODYiLCJlbWFpbCI6ImV4YW1wbGUxMjNAZ21haWwuY29tIiwianRpIjoiZGE5ZDA4ZWQtZDFiZC00ZjBiLWEzZDEtZTc4MzBjNzkzNzYxIiwibmFtZSI6ImpvaG4gZG9lIiwidXNlcm5hbWUiOiJqb2hubnkiLCJpYXQiOjE3ODUwNTQ0NTgsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODUwNTgwNTgsImlzcyI6IkJyZWFkLkFQSSIsImF1ZCI6IkJyZWFkLkFQSS5DbGllbnQifQ.RgX_O8w_0aUcnKADl33DWbIMzHL2cjKqCT31FTxcQ50
+
+###
+POST {{Bread.API_HostAddress}}/api/auth/register
+Content-Type: application/json
+{
+    "firstName": "john",
+    "lastName": "doe",
+    "email": "example123@gmail.com",
+    "userName": "johnny",
+    "password": "P@ssword123"
+}
+
+###
+
+POST {{Bread.API_HostAddress}}/api/auth/login
+Content-Type: application/json
+{
+    "Email" : "example123@gmail.com",
+    "Password" : "P@ssword123"
+}
