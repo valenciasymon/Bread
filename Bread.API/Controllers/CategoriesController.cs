@@ -1,0 +1,63 @@
+﻿using Bread.API.Application.Contracts;
+using Bread.API.Application.Dtos.CategoriesDto;
+using Bread.API.Common.Results;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Bread.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class CategoriesController(ICategoriesServices categoriesServices) : BaseApiController
+{
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<GetCategoriesDto>>> GetCategories()
+    {
+        Result<IEnumerable<GetCategoriesDto>> result = await
+           categoriesServices.GetCategoriesAsync();
+
+        return ToActionResult<IEnumerable<GetCategoriesDto>>(result);
+    }
+
+    [HttpGet("{categoryId:int}")]
+    public async Task<ActionResult<GetCategoryDto>> GetCategory([FromRoute] int categoryId)
+    {
+        Result<GetCategoryDto> result = await categoriesServices.GetCategoryAsync(categoryId);
+
+        return ToActionResult<GetCategoryDto>(result);
+    }
+
+    [HttpPost()]
+    public async Task<ActionResult<GetCategoryDto>> CreateCategory(
+        [FromBody] CreateCategoryDto createCategoryDto)
+    {
+        Result<GetCategoryDto> result = await categoriesServices.CreateCategoryAsync(createCategoryDto);
+
+        if (!result.Succeeded)
+            return MapErrorToActionResult(result.Errors);
+
+        return CreatedAtAction(
+            nameof(GetCategory),
+            new { categoryId = result.Value!.CategoryId },
+            result.Value);
+    }
+
+    [HttpPut("{categoryId:int}")]
+    public async Task<ActionResult> UpdateCategory(
+        [FromRoute] int categoryId,
+        [FromBody] UpdateCategoryDto updateCategoryDto)
+    {
+        Result result = await categoriesServices.UpdateCategoryAsync(categoryId, updateCategoryDto);
+
+        return ToActionResult(result);
+    }
+
+    [HttpDelete("{categoryId:int}")]
+    public async Task<ActionResult> DeleteCategory(int categoryId)
+    {
+        Result result = await categoriesServices.DeleteCategoryAsync(categoryId);
+
+        return ToActionResult(result);
+    }
+}

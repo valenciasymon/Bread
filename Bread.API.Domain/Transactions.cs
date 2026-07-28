@@ -11,6 +11,5 @@ public class Transactions
     public int CategoryId { get; set; }
     public Categories? Category { get; set; }
     public string UserId { get; set; } = string.Empty;
-    public ApplicationUser? User { get; set; }
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
 }

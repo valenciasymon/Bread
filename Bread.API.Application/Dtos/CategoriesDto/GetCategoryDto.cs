@@ -1,5 +1,5 @@
 ﻿using Bread.API.Application.Dtos.BudgetsDto;
-using Bread.API.Domain;
+using Bread.API.Application.Dtos.TransactionsDto;
 
 namespace Bread.API.Application.Dtos.CategoriesDto;
 
@@ -8,4 +8,4 @@ public record GetCategoryDto(
     string Name,
     string Type,
     List<GetBudgetsDto> Budgets,
-    List<GetBudgetsDto> Transactions);
+    List<GetTransactionsDto> Transactions);

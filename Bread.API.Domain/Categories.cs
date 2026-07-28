@@ -13,7 +13,6 @@ public class Categories
     public CategoryType Type { get; set; }
 
     public string UserId { get; set; } = string.Empty;
-    public ApplicationUser? User { get; set; }
 
     public ICollection<Budgets> Budgets { get; set; } = [];
     public ICollection<Transactions> Transactions { get; set; } = [];

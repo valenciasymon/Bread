@@ -12,5 +12,4 @@ public class Budgets
     public int CategoryId { get; set; }
     public Categories? Category { get; set; }
     public string UserId { get; set; } = string.Empty;
-    public ApplicationUser? User { get; set; }
 }

@@ -1,12 +1,15 @@
 
+using Bread.API.Application.Contracts;
 using Bread.API.Application.Services;
 using Bread.API.Common.Constants;
 using Bread.API.Common.Models.Config;
 using Bread.API.Domain;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Bread.API
 {
@@ -43,7 +46,10 @@ namespace Bread.API
             builder.Services.AddDbContext<AuthDbContext>(options => options.UseSqlServer(strconn));
 
             //identity
-            builder.Services.AddIdentityCore<ApplicationUser>()
+            builder.Services.AddIdentityCore<ApplicationUser>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+            })
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<AuthDbContext>();
 
@@ -59,12 +65,13 @@ namespace Bread.API
 
             builder.Services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtDefaults.AuthenticationScheme;
             })
                 .AddJwtBearer(options =>
                 {
+                    options.IncludeErrorDetails = true;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
@@ -77,15 +84,21 @@ namespace Bread.API
                             Encoding.UTF8.GetBytes(jwtSettings.Key)),
                         ClockSkew = TimeSpan.Zero
                     };
+
+                    
                 });
 
             builder.Services.AddAuthorization();
 
             //services
             builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<ICategoriesServices, CategoriesServices>();
             builder.Services.AddScoped<IUserServices, UserServices>();
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
@@ -98,6 +111,8 @@ namespace Bread.API
             }
 
             app.UseHttpsRedirection();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
