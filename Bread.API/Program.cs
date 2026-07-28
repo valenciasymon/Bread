@@ -4,7 +4,6 @@ using Bread.API.Application.Services;
 using Bread.API.Common.Constants;
 using Bread.API.Common.Models.Config;
 using Bread.API.Domain;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -60,7 +59,7 @@ namespace Bread.API
             JwtSettings jwtSettings = builder.Configuration.GetSection("JwtSettings")
                 .Get<JwtSettings>() ?? new JwtSettings();
 
-            if (string.IsNullOrWhiteSpace(jwtSettings.Key)) 
+            if (string.IsNullOrWhiteSpace(jwtSettings.Key))
                 throw new InvalidOperationException("JwtSetting:Key is Not Configured");
 
             builder.Services.AddAuthentication(options =>
@@ -85,7 +84,7 @@ namespace Bread.API
                         ClockSkew = TimeSpan.Zero
                     };
 
-                    
+
                 });
 
             builder.Services.AddAuthorization();
@@ -94,6 +93,7 @@ namespace Bread.API
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<ICategoriesServices, CategoriesServices>();
             builder.Services.AddScoped<IUserServices, UserServices>();
+            builder.Services.AddScoped<ITransactionsServices, TransactionsServices>();
 
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
