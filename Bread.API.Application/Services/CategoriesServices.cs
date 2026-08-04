@@ -16,9 +16,9 @@ public class CategoriesServices(
     BreadDbContext context,
     IHttpContextAccessor httpContextAccessor) : ICategoriesServices
 {
-    private readonly string userId = httpContextAccessor.HttpContext.
+    private readonly string userId = httpContextAccessor.HttpContext?.
         User?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
-        ?? httpContextAccessor.HttpContext.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
+        ?? httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
         ?? string.Empty;
     public async Task<Result<IEnumerable<GetCategoriesDto>>> GetCategoriesAsync()
     {
@@ -27,6 +27,7 @@ public class CategoriesServices(
                 ErrorCodes.Forbidden, "UserId is Required"));
 
         List<GetCategoriesDto> categories = await context.Categories
+            .AsNoTracking()
             .Where(c => c.UserId == userId)
             .Select(c => new GetCategoriesDto(
                 c.CategoryId,
@@ -43,6 +44,7 @@ public class CategoriesServices(
                 ErrorCodes.Forbidden, "UserId is Required"));
 
         GetCategoryDto? category = await context.Categories
+            .AsNoTracking()
             .Where(c => c.UserId == userId
             && c.CategoryId == categoryId)
             .Select(c => new GetCategoryDto(

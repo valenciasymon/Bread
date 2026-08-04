@@ -33,6 +33,9 @@ public readonly record struct Result
     public static Result Unauthorized(params Errors[] errors)
         => new Result(false, errors);
 
+    public static Result Validation(params Errors[] errors)
+        => new Result(false,errors);
+
     public static Result Combine(params Result[] result)
         => result.Any(r => !r.Succeeded) ?
         Failure(result.Where(r => !r.Succeeded).SelectMany(r => r.Errors).ToArray())
@@ -71,5 +74,8 @@ public readonly record struct Result<T>
         => new Result<T>(false, default, errors);
 
     public static Result<T> Unauthorized(params Errors[] errors)
+        => new Result<T>(false, default, errors);
+
+    public static Result<T> Validation(params Errors[] errors)
         => new Result<T>(false, default, errors);
 }

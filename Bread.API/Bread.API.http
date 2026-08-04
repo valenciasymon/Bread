@@ -1,5 +1,5 @@
 @Bread.API_HostAddress = https://localhost:7209
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YzYwZTU2MC1jYWE5LTRiOGItYjNjNi05OWQ5NzcxMDQ1ODYiLCJlbWFpbCI6ImV4YW1wbGUxMjNAZ21haWwuY29tIiwianRpIjoiOGNjYWI2N2ItMjUwMy00ZDY3LWE4NWItY2E2MTJkNjY0NmYwIiwibmFtZSI6ImpvaG4gZG9lIiwidXNlcm5hbWUiOiJqb2hubnkiLCJpYXQiOjE3ODUyMzI1MTksImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODUyMzYxMTksImlzcyI6IkJyZWFkLkFQSSIsImF1ZCI6IkJyZWFkLkFQSS5DbGllbnQifQ.cdJLL8k7T7bzZfLNm9Ipnrj8TqCGZlHJZBJJQLyMPmw
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YzYwZTU2MC1jYWE5LTRiOGItYjNjNi05OWQ5NzcxMDQ1ODYiLCJlbWFpbCI6ImV4YW1wbGUxMjNAZ21haWwuY29tIiwianRpIjoiZWFkNmVkNTctYzJiYy00MTY3LWIxYWMtNGI0MmU0MWRjZWU2IiwibmFtZSI6ImpvaG4gZG9lIiwidXNlcm5hbWUiOiJqb2hubnkiLCJpYXQiOjE3ODU4NTE4MTgsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODU4NTU0MTgsImlzcyI6IkJyZWFkLkFQSSIsImF1ZCI6IkJyZWFkLkFQSS5DbGllbnQifQ.DcESZF_sZ3XneIB0l581iVZMG4mmPnDKFt-4_9cC1Ls
 
 ### Register
 POST {{Bread.API_HostAddress}}/api/auth/register
@@ -50,4 +50,68 @@ Content-Type: application/json
     "CategoryId":1,
     "Name":"Food",
     "Type":"Expense"
+}
+
+###
+GET {{Bread.API_HostAddress}}/api/transactions
+Authorization : Bearer {{token}}
+
+###
+
+GET {{Bread.API_HostAddress}}/api/transactions/1
+Authorization : Bearer {{token}}
+
+###
+
+POST {{Bread.API_HostAddress}}/api/transactions
+Authorization : Bearer {{token}}
+Content-Type: application/json
+{
+  "amount": 50000.00,
+  "date": "2026-08-01",
+  "categoryId": 1
+}
+
+###
+
+PUT {{Bread.API_HostAddress}}/api/transactions/1
+Authorization : Bearer {{token}}
+Content-Type: application/json
+{
+  "transactionid":1,
+  "amount": 5000.00,
+  "date": "2026-08-01",
+  "categoryId": 1
+}
+
+###
+GET {{Bread.API_HostAddress}}/api/budgets
+Authorization : Bearer {{token}}
+
+###
+GET {{Bread.API_HostAddress}}/api/budgets/1
+Authorization : Bearer {{token}}
+
+###
+
+POST {{Bread.API_HostAddress}}/api/budgets
+Authorization : Bearer {{token}}
+Content-Type : application/json
+{
+    "amount": 100000,
+    "month": 8,
+    "year": 2026,
+    "categoryId":1
+}
+
+###
+PUT {{Bread.API_HostAddress}}/api/budgets/1
+Authorization : Bearer {{token}}
+Content-Type : application/json
+{
+    "budgetid":1,
+    "amount": 150000,
+    "month":7,
+    "year":2026,
+    "categoryId":1
 }

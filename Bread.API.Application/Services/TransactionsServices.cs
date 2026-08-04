@@ -14,9 +14,9 @@ public class TransactionsServices(
     BreadDbContext context,
     IHttpContextAccessor httpContext) : ITransactionsServices
 {
-    private readonly string userId = httpContext.HttpContext.User?.
+    private readonly string userId = httpContext.HttpContext?.User?.
         FindFirst(JwtRegisteredClaimNames.Sub)?.Value
-        ?? httpContext.HttpContext.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
+        ?? httpContext.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
         ?? string.Empty;
     public async Task<Result<IEnumerable<GetTransactionsDto>>> GetTransactionsAsync()
     {
@@ -25,6 +25,7 @@ public class TransactionsServices(
                 ErrorCodes.Forbidden, "UserId is Required"));
 
         List<GetTransactionsDto> transactions = await context.Transactions
+            .AsNoTracking()
             .Where(t => t.UserId == userId)
             .Select(t => new GetTransactionsDto(
                 t.TransactionId,
@@ -44,6 +45,7 @@ public class TransactionsServices(
                 ErrorCodes.Forbidden, "UserId is Required"));
 
         GetTransactionsDto? transaction = await context.Transactions
+            .AsNoTracking()
             .Where(t => t.TransactionId == transactionId && t.UserId == userId)
             .Select(t => new GetTransactionsDto(
                 t.TransactionId,
@@ -115,6 +117,10 @@ public class TransactionsServices(
         if (string.IsNullOrWhiteSpace(userId))
             return Result.Forbidden(new Errors(
                 ErrorCodes.Forbidden, "UserId is Required"));
+
+        if (transactionId != updateTransactionDto.TransactionId)
+            return Result.Validation(new Errors(
+                ErrorCodes.Validation, "RouteId Does Not Match PayloadId"));
 
         try
         {

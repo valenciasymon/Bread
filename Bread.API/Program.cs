@@ -94,6 +94,7 @@ namespace Bread.API
             builder.Services.AddScoped<ICategoriesServices, CategoriesServices>();
             builder.Services.AddScoped<IUserServices, UserServices>();
             builder.Services.AddScoped<ITransactionsServices, TransactionsServices>();
+            builder.Services.AddScoped<IBudgetsServices, BudgetsServices>();
 
             builder.Services.AddControllers().AddJsonOptions(options =>
             {
