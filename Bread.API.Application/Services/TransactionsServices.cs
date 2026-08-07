@@ -3,6 +3,7 @@ using Bread.API.Application.Dtos.TransactionsDto;
 using Bread.API.Common.Constants;
 using Bread.API.Common.Results;
 using Bread.API.Domain;
+using Bread.API.Domain.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
@@ -71,13 +72,18 @@ public class TransactionsServices(
 
         try
         {
-            bool categoryExist = await context.Categories.AnyAsync(
+            Categories? category = await context.Categories.FirstOrDefaultAsync(
                 c => c.CategoryId == createTransactionDto.CategoryId
                 && c.UserId == userId);
 
-            if (!categoryExist)
+            if (category == null)
                 return Result<GetTransactionsDto>.NotFound(new Errors(
                     ErrorCodes.NotFound, "Category Does Not Exist"));
+
+            if (category.Type == CategoryType.Income)
+                return Result<GetTransactionsDto>.BadRequest(new Errors(
+                    ErrorCodes.BadRequest,
+                    "Transactions can only be created for expense categories."));
 
             Transactions transaction = new Transactions
             {
@@ -87,7 +93,7 @@ public class TransactionsServices(
                 UserId = userId
             };
 
-            await context.AddAsync(transaction);
+            await context.Transactions.AddAsync(transaction);
             await context.SaveChangesAsync();
 
             await context.Entry(transaction)

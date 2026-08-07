@@ -1,0 +1,21 @@
+﻿using Bread.API.Application.Contracts;
+using Bread.API.Application.Dtos.DashBoardDto;
+using Bread.API.Common.Results;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Bread.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+[Authorize]
+public class DashBoardController(IDashBoardServices dashBoardServices) : BaseApiController
+{
+    [HttpGet]
+    public async Task<ActionResult<GetDashBoardDto>> GetDashBoard()
+    {
+        Result<GetDashBoardDto> result = await dashBoardServices.GetDashBoardAsync();
+
+        return ToActionResult(result);
+    }
+}
