@@ -3,6 +3,7 @@ using Bread.API.Application.Dtos.BudgetsDto;
 using Bread.API.Common.Constants;
 using Bread.API.Common.Results;
 using Bread.API.Domain;
+using Bread.API.Domain.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
@@ -89,6 +90,32 @@ public class BudgetsServices(
                 return Result<GetBudgetsDto>.Conflict(new Errors(
                     ErrorCodes.Conflict, "Budget Already Exist!"));
 
+            DateOnly currentDate = DateOnly.FromDateTime(DateTime.Today);
+
+            var totals = await context.Budgets
+                .AsNoTracking()
+                .Where(b => b.UserId == userId
+                && b.Month == currentDate.Month
+                && b.Year == currentDate.Year)
+                .Select(b => new
+                {
+                    b.Amount,
+                    b.Category!.Type
+                })
+                .ToListAsync();
+
+            decimal totalIncome = totals.Where(b => b.Type == CategoryType.Income)
+                .Sum(b => b.Amount);
+
+            decimal currentBudgets = totals.Where(b => b.Type == CategoryType.Expense)
+                .Sum(b => b.Amount);
+
+            decimal currentBalance = totalIncome - currentBudgets;
+
+            if (currentBalance < createBudgetDto.Amount)
+                return Result<GetBudgetsDto>.Conflict(new Errors(
+                    ErrorCodes.Conflict, "The Amount Exceeds The Current Income Balance"));
+           
             Budgets budget = new Budgets
             {
                 Amount = createBudgetDto.Amount,

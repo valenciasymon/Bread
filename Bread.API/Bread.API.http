@@ -1,15 +1,15 @@
 @Bread.API_HostAddress = https://localhost:7209
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YzYwZTU2MC1jYWE5LTRiOGItYjNjNi05OWQ5NzcxMDQ1ODYiLCJlbWFpbCI6ImV4YW1wbGUxMjNAZ21haWwuY29tIiwianRpIjoiZWFkNmVkNTctYzJiYy00MTY3LWIxYWMtNGI0MmU0MWRjZWU2IiwibmFtZSI6ImpvaG4gZG9lIiwidXNlcm5hbWUiOiJqb2hubnkiLCJpYXQiOjE3ODU4NTE4MTgsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODU4NTU0MTgsImlzcyI6IkJyZWFkLkFQSSIsImF1ZCI6IkJyZWFkLkFQSS5DbGllbnQifQ.DcESZF_sZ3XneIB0l581iVZMG4mmPnDKFt-4_9cC1Ls
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYWMzNjljNy0xNzI3LTRiZmMtYmUyNy02MTUyZTE4NDU3NjkiLCJlbWFpbCI6Imxhd3RpdGlnb3lAZ21haWwuY29tIiwianRpIjoiZDk3OWY3OWItMzA4Zi00YWI2LTlmNDgtYTNmZDQ5MDMzZGI4IiwibmFtZSI6ImxhdyBpZG9sIiwidXNlcm5hbWUiOiJpZG9sYXciLCJpYXQiOjE3ODYyNzAyNDAsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODYyNzM4NDEsImlzcyI6IkJyZWFkLkFQSSIsImF1ZCI6IkJyZWFkLkFQSS5DbGllbnQifQ.stRet2vmrItVLbLbb0rwmKqn2S6kBp5fu58SQ91lnxA
 
 ### Register
 POST {{Bread.API_HostAddress}}/api/auth/register
 Content-Type: application/json
 
 {
-    "firstName": "john",
-    "lastName": "doe",
-    "email": "example123@gmail.com",
-    "userName": "Johnny",
+    "firstName": "law",
+    "lastName": "idol",
+    "email": "lawtitigoy@gmail.com",
+    "userName": "idolaw",
     "password": "P@ssword123"
 }
 
@@ -19,7 +19,7 @@ POST {{Bread.API_HostAddress}}/api/auth/login
 Content-Type: application/json
 
 {
-    "Email" : "example123@gmail.com",
+    "Email" : "lawtitigoy@gmail.com",
     "Password" : "P@ssword123"
 }
 
@@ -29,7 +29,7 @@ GET {{Bread.API_HostAddress}}/api/categories
 Authorization: Bearer {{token}}
 
 ### Get Categories
-GET {{Bread.API_HostAddress}}/api/categories/1
+GET {{Bread.API_HostAddress}}/api/categories/6
 Authorization: Bearer {{token}}
 
 ###
@@ -37,7 +37,7 @@ POST {{Bread.API_HostAddress}}/api/categories
 Authorization: Bearer {{token}}
 Content-Type: application/json
 {
-    "Name":"digimon",
+    "Name":"Bold",
     "Type":"Expense"
 }
 
@@ -67,9 +67,9 @@ POST {{Bread.API_HostAddress}}/api/transactions
 Authorization : Bearer {{token}}
 Content-Type: application/json
 {
-  "amount": 50000.00,
+  "amount": 91000.00,
   "date": "2026-08-01",
-  "categoryId": 1
+  "categoryId": 7
 }
 
 ###
@@ -98,10 +98,10 @@ POST {{Bread.API_HostAddress}}/api/budgets
 Authorization : Bearer {{token}}
 Content-Type : application/json
 {
-    "amount": 100000,
+    "amount": 10000,
     "month": 8,
     "year": 2026,
-    "categoryId":1
+    "categoryId":7
 }
 
 ###
@@ -115,3 +115,7 @@ Content-Type : application/json
     "year":2026,
     "categoryId":1
 }
+
+###
+GET {{Bread.API_HostAddress}}/api/dashboard
+Authorization : Bearer {{token}}
