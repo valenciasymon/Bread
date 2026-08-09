@@ -1,5 +1,5 @@
 @Bread.API_HostAddress = https://localhost:7209
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYWMzNjljNy0xNzI3LTRiZmMtYmUyNy02MTUyZTE4NDU3NjkiLCJlbWFpbCI6Imxhd3RpdGlnb3lAZ21haWwuY29tIiwianRpIjoiN2UyMjBjZTMtMmQwNy00NmY4LTllOGQtYTE4OGI2ZmZlN2RiIiwibmFtZSI6ImxhdyBpZG9sIiwidXNlcm5hbWUiOiJpZG9sYXciLCJpYXQiOjE3ODYxMDY5ODUsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODYxMTA1ODUsImlzcyI6IkJyZWFkLkFQSSIsImF1ZCI6IkJyZWFkLkFQSS5DbGllbnQifQ.pCCDnHpJg4lpNYEtmjTmUMkzLCSVj0dx4WYQQ_eba_w
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYWMzNjljNy0xNzI3LTRiZmMtYmUyNy02MTUyZTE4NDU3NjkiLCJlbWFpbCI6Imxhd3RpdGlnb3lAZ21haWwuY29tIiwianRpIjoiZDk3OWY3OWItMzA4Zi00YWI2LTlmNDgtYTNmZDQ5MDMzZGI4IiwibmFtZSI6ImxhdyBpZG9sIiwidXNlcm5hbWUiOiJpZG9sYXciLCJpYXQiOjE3ODYyNzAyNDAsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODYyNzM4NDEsImlzcyI6IkJyZWFkLkFQSSIsImF1ZCI6IkJyZWFkLkFQSS5DbGllbnQifQ.stRet2vmrItVLbLbb0rwmKqn2S6kBp5fu58SQ91lnxA
 
 ### Register
 POST {{Bread.API_HostAddress}}/api/auth/register
@@ -37,7 +37,7 @@ POST {{Bread.API_HostAddress}}/api/categories
 Authorization: Bearer {{token}}
 Content-Type: application/json
 {
-    "Name":"Pagkain",
+    "Name":"Bold",
     "Type":"Expense"
 }
 
@@ -67,9 +67,9 @@ POST {{Bread.API_HostAddress}}/api/transactions
 Authorization : Bearer {{token}}
 Content-Type: application/json
 {
-  "amount": 5000.00,
+  "amount": 91000.00,
   "date": "2026-08-01",
-  "categoryId": 6
+  "categoryId": 7
 }
 
 ###
@@ -98,10 +98,10 @@ POST {{Bread.API_HostAddress}}/api/budgets
 Authorization : Bearer {{token}}
 Content-Type : application/json
 {
-    "amount": 15000,
+    "amount": 10000,
     "month": 8,
     "year": 2026,
-    "categoryId":6
+    "categoryId":7
 }
 
 ###

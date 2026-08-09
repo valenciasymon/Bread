@@ -88,6 +88,10 @@ public class DashBoardServices(
                 a.BudgetSpent / a.BudgetAmount * 100))
             .ToListAsync();
 
+        budgetProgress = budgetProgress
+            .OrderByDescending(b => b.PercentageUsed)
+            .Take(5).ToList();
+
         return Result<IEnumerable<GetBudgetProgressDto>>.Success(budgetProgress);
     }
 
@@ -129,7 +133,11 @@ public class DashBoardServices(
         List<GetSpendingDto> totalSpent = await context.Categories
             .AsNoTracking()
             .Where(c => c.UserId == userId
-            && c.Type == CategoryType.Expense)
+            && c.Type == CategoryType.Expense
+            && c.Transactions.Any(
+                t => t.Date.Month == currentDate.Month
+                && t.Date.Year == currentDate.Year
+                && t.Amount >= 1))
             .Select(c => new GetSpendingDto(
                 c.CategoryId,
                 c.Name,
