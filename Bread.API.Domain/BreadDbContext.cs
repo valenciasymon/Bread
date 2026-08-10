@@ -9,6 +9,7 @@ public class BreadDbContext : DbContext
     public DbSet<Categories> Categories { get; set; }
     public DbSet<Budgets> Budgets { get; set; }
     public DbSet<Transactions> Transactions { get; set; }
+    public DbSet<AuditLog> AuditLogs { get; set; }
     public BreadDbContext(DbContextOptions<BreadDbContext> options) : base(options)
     {
 

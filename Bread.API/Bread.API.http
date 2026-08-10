@@ -1,15 +1,15 @@
 @Bread.API_HostAddress = https://localhost:7209
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYWMzNjljNy0xNzI3LTRiZmMtYmUyNy02MTUyZTE4NDU3NjkiLCJlbWFpbCI6Imxhd3RpdGlnb3lAZ21haWwuY29tIiwianRpIjoiZDk3OWY3OWItMzA4Zi00YWI2LTlmNDgtYTNmZDQ5MDMzZGI4IiwibmFtZSI6ImxhdyBpZG9sIiwidXNlcm5hbWUiOiJpZG9sYXciLCJpYXQiOjE3ODYyNzAyNDAsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODYyNzM4NDEsImlzcyI6IkJyZWFkLkFQSSIsImF1ZCI6IkJyZWFkLkFQSS5DbGllbnQifQ.stRet2vmrItVLbLbb0rwmKqn2S6kBp5fu58SQ91lnxA
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYjRiNGMxMy02YWM4LTRkMzItYmJiMi05MzY5N2U2MWYxY2IiLCJlbWFpbCI6ImVtcGVyb3JSaGlhbkBnbWFpbC5jb20iLCJqdGkiOiJlMGJhMGI5NC1jNzZiLTRmNzEtYTQ1MS00ODc5NmEyNTM3MzEiLCJuYW1lIjoiZW1wZXJvciByaGlhbiIsInVzZXJuYW1lIjoieW90eW90IiwiaWF0IjoxNzg2MzU2OTI0LCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzg2MzYwNTI0LCJpc3MiOiJCcmVhZC5BUEkiLCJhdWQiOiJCcmVhZC5BUEkuQ2xpZW50In0.bV2oT86QelnSTJOso-rePPkK9Sb8ZsyvHa-BsyFHjuE
 
 ### Register
 POST {{Bread.API_HostAddress}}/api/auth/register
 Content-Type: application/json
 
 {
-    "firstName": "law",
-    "lastName": "idol",
-    "email": "lawtitigoy@gmail.com",
-    "userName": "idolaw",
+    "firstName": "emperor",
+    "lastName": "rhian",
+    "email": "emperorRhian@gmail.com",
+    "userName": "yotyot",
     "password": "P@ssword123"
 }
 
@@ -19,7 +19,7 @@ POST {{Bread.API_HostAddress}}/api/auth/login
 Content-Type: application/json
 
 {
-    "Email" : "lawtitigoy@gmail.com",
+    "Email" : "emperorRhian@gmail.com",
     "Password" : "P@ssword123"
 }
 
@@ -29,7 +29,7 @@ GET {{Bread.API_HostAddress}}/api/categories
 Authorization: Bearer {{token}}
 
 ### Get Categories
-GET {{Bread.API_HostAddress}}/api/categories/6
+GET {{Bread.API_HostAddress}}/api/categories/8
 Authorization: Bearer {{token}}
 
 ###
@@ -37,7 +37,7 @@ POST {{Bread.API_HostAddress}}/api/categories
 Authorization: Bearer {{token}}
 Content-Type: application/json
 {
-    "Name":"Bold",
+    "Name":"Sulasok",
     "Type":"Expense"
 }
 
@@ -67,9 +67,9 @@ POST {{Bread.API_HostAddress}}/api/transactions
 Authorization : Bearer {{token}}
 Content-Type: application/json
 {
-  "amount": 91000.00,
-  "date": "2026-08-01",
-  "categoryId": 7
+  "amount": 7000.00,
+  "date": "2026-08-10",
+  "categoryId": 9
 }
 
 ###
@@ -79,7 +79,7 @@ Authorization : Bearer {{token}}
 Content-Type: application/json
 {
   "transactionid":1,
-  "amount": 5000.00,
+  "amount": 7000.00,
   "date": "2026-08-01",
   "categoryId": 1
 }
@@ -98,10 +98,10 @@ POST {{Bread.API_HostAddress}}/api/budgets
 Authorization : Bearer {{token}}
 Content-Type : application/json
 {
-    "amount": 10000,
+    "amount": 70000,
     "month": 8,
     "year": 2026,
-    "categoryId":7
+    "categoryId":9
 }
 
 ###

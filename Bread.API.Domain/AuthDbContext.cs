@@ -16,5 +16,6 @@ public class AuthDbContext : IdentityDbContext<ApplicationUser>
         base.OnModelCreating(builder);
 
         builder.ApplyConfiguration(new RolesConfigurations());
+        builder.ApplyConfiguration(new ApplicationUserConfigurations());
     }
 }

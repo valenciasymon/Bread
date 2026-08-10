@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Text;
 
@@ -49,7 +50,7 @@ public class UserServices(
             {
                 await transaction.RollbackAsync();
 
-                return Result<RegisteredUserDto>.BadRequest(userResult.Errors.Select(e => new Errors(
+                return Result<RegisteredUserDto>.BadRequest(roleResult.Errors.Select(e => new Errors(
                     ErrorCodes.BadRequest, e.Description)).ToArray());
             }
 

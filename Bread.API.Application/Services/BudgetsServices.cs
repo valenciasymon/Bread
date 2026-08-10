@@ -72,11 +72,11 @@ public class BudgetsServices(
 
         try
         {
-            bool categoryExist = await context.Categories
-                .AnyAsync(c => c.CategoryId == createBudgetDto.CategoryId
+            Categories? category = await context.Categories
+                .FirstOrDefaultAsync(c => c.CategoryId == createBudgetDto.CategoryId
                 && c.UserId == userId);
 
-            if (!categoryExist)
+            if (category == null)
                 return Result<GetBudgetsDto>.NotFound(new Errors(
                     ErrorCodes.NotFound, "Category Not Found"));
 
@@ -112,7 +112,8 @@ public class BudgetsServices(
 
             decimal currentBalance = totalIncome - currentBudgets;
 
-            if (currentBalance < createBudgetDto.Amount)
+            if(category.Type == CategoryType.Expense
+                && currentBalance < createBudgetDto.Amount)
                 return Result<GetBudgetsDto>.Conflict(new Errors(
                     ErrorCodes.Conflict, "The Amount Exceeds The Current Income Balance"));
            
@@ -125,7 +126,15 @@ public class BudgetsServices(
                 UserId = userId
             };
 
-            await context.AddAsync(budget);
+            AuditLog auditLog = new AuditLog
+            {
+                UserId = userId,
+                Action = AuditActions.Created,
+                Details = $"{AuditDetails.Budget}{budget.Amount}"
+            };
+
+            await context.Budgets.AddAsync(budget);
+            await context.AuditLogs.AddAsync(auditLog);
             await context.SaveChangesAsync();
 
             await context.Entry(budget)
@@ -194,6 +203,14 @@ public class BudgetsServices(
             budget.Year = updateBudgetDto.Year;
             budget.CategoryId = updateBudgetDto.CategoryId;
 
+            AuditLog auditLog = new AuditLog
+            {
+                UserId = userId,
+                Action = AuditActions.Updated,
+                Details = $"{AuditDetails.Budget}ID:{budget.BudgetsId}"
+            };
+
+            await context.AuditLogs.AddAsync(auditLog);
             await context.SaveChangesAsync();
 
             return Result.Success();
@@ -219,15 +236,33 @@ public class BudgetsServices(
             return Result.Forbidden(new Errors(
                 ErrorCodes.Forbidden, "UserId Is Required"));
 
-        int rows = await context.Budgets
-            .Where(b => b.BudgetsId == budgetId
-            && b.UserId == userId)
-            .ExecuteDeleteAsync();
+        try
+        {
+            Budgets? budget = await context.Budgets
+                .FirstOrDefaultAsync(b => b.BudgetsId == budgetId
+                && b.UserId == userId);
 
-        if (rows == 0)
-            return Result.NotFound(new Errors(
-                ErrorCodes.NotFound, "Budget Not Found"));
+            if (budget == null)
+                return Result.NotFound(new Errors(
+                    ErrorCodes.NotFound, "Budget Not Found"));
 
-        return Result.Success();
+            AuditLog auditLog = new AuditLog
+            {
+                UserId = userId,
+                Action = AuditActions.Deleted,
+                Details = $"{AuditDetails.Budget}ID:{budget.BudgetsId}"
+            };
+
+            context.Budgets.Remove(budget);
+            await context.AuditLogs.AddAsync(auditLog);
+            await context.SaveChangesAsync();
+
+            return Result.Success();
+        }
+        catch (Exception)
+        {
+            return Result.Failure(new Errors(
+                ErrorCodes.Failure, "Unexpected Server Error"));
+        }
     }
 }

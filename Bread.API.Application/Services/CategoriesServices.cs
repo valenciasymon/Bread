@@ -96,7 +96,15 @@ public class CategoriesServices(
                 UserId = userId
             };
 
-            await context.AddAsync(category);
+            AuditLog auditLog = new AuditLog
+            {
+                UserId = userId,
+                Action = AuditActions.Created,
+                Details = $"{AuditDetails.Category}{createCategoryDto.Name}"
+            };
+
+            await context.Categories.AddAsync(category);
+            await context.AuditLogs.AddAsync(auditLog);
             await context.SaveChangesAsync();
 
             GetCategoryDto getCategoriesDto = new GetCategoryDto(
@@ -147,6 +155,14 @@ public class CategoriesServices(
             category.Name = updateCategoryDto.Name;
             category.Type = updateCategoryDto.Type;
 
+            AuditLog auditLog = new AuditLog
+            {
+                UserId = userId,
+                Action = AuditActions.Updated,
+                Details = $"{AuditDetails.Category}{category.Name}"
+            };
+
+            await context.AuditLogs.AddAsync(auditLog);
             await context.SaveChangesAsync();
 
             return Result.Success();
@@ -170,17 +186,46 @@ public class CategoriesServices(
         if (string.IsNullOrWhiteSpace(userId))
             return Result.Forbidden(new Errors(
                 ErrorCodes.Forbidden, "UserId is Required"));
+        try
+        {
+            Categories? category = await context.Categories
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.CategoryId == categoryId
+                && c.UserId == userId);
 
-        int rows = await context.Categories
-            .Where(c => c.CategoryId == categoryId
-            && c.UserId == userId)
-            .ExecuteDeleteAsync();
+            if (category == null)
+                return Result.NotFound(new Errors(
+                    ErrorCodes.NotFound, "Category Not Found"));
 
-        if (rows == 0)
-            return Result.NotFound(new Errors(
-                ErrorCodes.NotFound, "Category Not Found"));
+            bool connectedTransactions = await context.Transactions
+                .AnyAsync(t => t.CategoryId == category.CategoryId);
 
-        return Result.Success();
+            bool connectedBudgets = await context.Budgets
+                .AnyAsync(b => b.CategoryId == category.CategoryId);
+
+            if (connectedBudgets || connectedTransactions)
+                return Result.Conflict(new Errors(
+                    ErrorCodes.Conflict, "Category Must Not Contain Budgets Or Transactions"));
+
+            AuditLog auditLog = new AuditLog
+            {
+                UserId = userId,
+                Action = AuditActions.Deleted,
+                Details = $"{AuditDetails.Category}{category.Name}"
+            };
+
+            context.Categories.Remove(category);
+            await context.AuditLogs.AddAsync(auditLog);
+
+            await context.SaveChangesAsync();
+
+            return Result.Success();
+        }
+        catch (Exception)
+        {
+            return Result.Failure(new Errors(
+                ErrorCodes.Failure, "Unexpected Server Error"));
+        }
     }
 
 

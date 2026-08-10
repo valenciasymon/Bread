@@ -93,7 +93,15 @@ public class TransactionsServices(
                 UserId = userId
             };
 
+            AuditLog auditLog = new AuditLog
+            {
+                UserId = userId,
+                Action = AuditActions.Created,
+                Details = $"{AuditDetails.Transactions}{transaction.Amount}"
+            };
+
             await context.Transactions.AddAsync(transaction);
+            await context.AuditLogs.AddAsync(auditLog);
             await context.SaveChangesAsync();
 
             await context.Entry(transaction)
@@ -150,6 +158,14 @@ public class TransactionsServices(
             transaction.Date = updateTransactionDto.Date;
             transaction.CategoryId = updateTransactionDto.CategoryId;
 
+            AuditLog auditLog = new AuditLog
+            {
+                UserId = userId,
+                Action = AuditActions.Updated,
+                Details = $"{AuditDetails.Transactions}ID:{transaction.TransactionId}"
+            };
+
+            await context.AuditLogs.AddAsync(auditLog);
             await context.SaveChangesAsync();
 
             return Result.Success();
@@ -173,15 +189,34 @@ public class TransactionsServices(
         if (string.IsNullOrWhiteSpace(userId))
             return Result.Forbidden(new Errors(
                 ErrorCodes.Forbidden, "UserId is Required"));
+        try
+        {
+            Transactions? transaction = await context.Transactions
+                .FirstOrDefaultAsync(t => t.TransactionId == transactionId
+                && t.UserId == userId);
 
-        int rows = await context.Transactions
-            .Where(t => t.TransactionId == transactionId && t.UserId == userId)
-            .ExecuteDeleteAsync();
+            if (transaction == null)
+                return Result.NotFound(new Errors(
+                    ErrorCodes.NotFound, "Transaction Not Found"));
 
-        if (rows == 0)
-            return Result.NotFound(new Errors(
-                ErrorCodes.NotFound, "Transaction Not Found"));
+            AuditLog auditLog = new AuditLog
+            {
+                UserId = userId,
+                Action = AuditActions.Deleted,
+                Details = $"{AuditDetails.Transactions}ID:{transaction.TransactionId}"
+            };
 
-        return Result.Success();
+            context.Transactions.Remove(transaction);
+            await context.AuditLogs.AddAsync(auditLog);
+            await context.SaveChangesAsync();
+
+            return Result.Success();
+        }
+        catch (Exception)
+        {
+            return Result.Failure(new Errors(
+                ErrorCodes.Failure, "Unexpected Server Error"));
+        }
+
     }
 }
