@@ -5,4 +5,4 @@ public record GetUsersAdminDto(
     string Email,
     string Role,
     string Status,
-    DateOnly CreatedAt);
+    DateTime CreatedAtUtc);

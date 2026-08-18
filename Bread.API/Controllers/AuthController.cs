@@ -1,6 +1,8 @@
 ﻿using Bread.API.Application.Dtos.AuthDto;
 using Bread.API.Application.Services;
+using Bread.API.Common.Constants;
 using Bread.API.Common.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bread.API.Controllers;
@@ -19,10 +21,11 @@ public class AuthController(IUserServices userServices) : BaseApiController
     }
 
     [HttpPost("breadadmin")]
+    [Authorize(Roles = RolesConstants.Admin)]
     public async Task<ActionResult<RegisteredUserDto>> RegisterAdmin(
         [FromBody] RegisterUserDto registerUserDto)
     {
-        Result<RegisteredUserDto> result = await userServices.RegisterUserAsync(registerUserDto);
+        Result<RegisteredUserDto> result = await userServices.RegisterAdminAsync(registerUserDto);
 
         return ToActionResult<RegisteredUserDto>(result);
     }

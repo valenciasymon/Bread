@@ -4,4 +4,4 @@ public record GetAuditLogsDto(
     string FullName,
     string Action,
     string Description,
-    DateOnly CreatedAtUtc);
+    DateTime CreatedAtUtc);

@@ -7,5 +7,6 @@ namespace Bread.API.Application.Services
     {
         Task<Result<string>> LoginAsync(LoginUserDto loginUserDto);
         Task<Result<RegisteredUserDto>> RegisterUserAsync(RegisterUserDto registerUserDto);
+        Task<Result<RegisteredUserDto>> RegisterAdminAsync(RegisterUserDto registerUserDto);
     }
 }

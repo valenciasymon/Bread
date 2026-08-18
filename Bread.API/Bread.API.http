@@ -1,5 +1,5 @@
 @Bread.API_HostAddress = https://localhost:7209
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYjRiNGMxMy02YWM4LTRkMzItYmJiMi05MzY5N2U2MWYxY2IiLCJlbWFpbCI6ImVtcGVyb3JSaGlhbkBnbWFpbC5jb20iLCJqdGkiOiJlMGJhMGI5NC1jNzZiLTRmNzEtYTQ1MS00ODc5NmEyNTM3MzEiLCJuYW1lIjoiZW1wZXJvciByaGlhbiIsInVzZXJuYW1lIjoieW90eW90IiwiaWF0IjoxNzg2MzU2OTI0LCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzg2MzYwNTI0LCJpc3MiOiJCcmVhZC5BUEkiLCJhdWQiOiJCcmVhZC5BUEkuQ2xpZW50In0.bV2oT86QelnSTJOso-rePPkK9Sb8ZsyvHa-BsyFHjuE
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMjg0NzYxNS0yN2E5LTQ2NmQtOTUyZC1kN2U1ZGEwYjFkNTAiLCJlbWFpbCI6ImFkbWluc3ltb25AZ21haWwuY29tIiwianRpIjoiY2E1NjFjZTItZjc4NS00ZTIzLWEyNmUtM2Q3ZWEwNjA0MDliIiwibmFtZSI6InN5bW9uIG1vbm1vbiIsInVzZXJuYW1lIjoiR29kbHkiLCJpYXQiOjE3ODcwNTQ1MTgsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg3MDU4MTE4LCJpc3MiOiJCcmVhZC5BUEkiLCJhdWQiOiJCcmVhZC5BUEkuQ2xpZW50In0.pSZFPpWOySgitOaHjI9wYw4qA0AuS8hb3HHafo4jWs0
 
 ### Register
 POST {{Bread.API_HostAddress}}/api/auth/register
@@ -13,8 +13,19 @@ Content-Type: application/json
     "password": "P@ssword123"
 }
 
+###
+POST {{Bread.API_HostAddress}}/api/auth/breadadmin
+Content-Type: application/json
+
+{
+    "firstName": "symon",
+    "lastName": "monmon",
+    "email": "adminsymon@gmail.com",
+    "userName": "Godly",
+    "password": "P@ssword123"
+}
 ### Login
-# @name login
+# user login
 POST {{Bread.API_HostAddress}}/api/auth/login
 Content-Type: application/json
 
@@ -25,6 +36,14 @@ Content-Type: application/json
 
 ###
 
+POST {{Bread.API_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email":"adminsymon@gmail.com",
+    "password": "P@ssword123"
+}
+###
 GET {{Bread.API_HostAddress}}/api/categories
 Authorization: Bearer {{token}}
 
@@ -118,4 +137,8 @@ Content-Type : application/json
 
 ###
 GET {{Bread.API_HostAddress}}/api/dashboard
+Authorization : Bearer {{token}}
+
+###
+GET {{Bread.API_HostAddress}}/api/admindashboard
 Authorization : Bearer {{token}}
