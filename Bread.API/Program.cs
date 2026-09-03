@@ -98,10 +98,13 @@ namespace Bread.API
             builder.Services.AddScoped<IDashBoardServices, DashBoardServices>();
             builder.Services.AddScoped<IAdminDashBoardServices, AdminDashBoardServices>();
 
-            builder.Services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-            });
+            builder.Services.AddControllers()
+                .AddNewtonsoftJson()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                });
+
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 

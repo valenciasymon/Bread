@@ -3,6 +3,8 @@ using Bread.API.Application.Dtos.BudgetsDto;
 using Bread.API.Application.Dtos.CategoriesDto;
 using Bread.API.Application.Dtos.TransactionsDto;
 using Bread.API.Common.Constants;
+using Bread.API.Common.Models.Extensions;
+using Bread.API.Common.Models.Paging;
 using Bread.API.Common.Results;
 using Bread.API.Domain;
 using Microsoft.AspNetCore.Http;
@@ -20,21 +22,23 @@ public class CategoriesServices(
         User?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
         ?? httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
         ?? string.Empty;
-    public async Task<Result<IEnumerable<GetCategoriesDto>>> GetCategoriesAsync()
+    public async Task<Result<PagedResult<GetCategoriesDto>>> GetCategoriesAsync(
+        PaginationParameters paginationParameters)
     {
         if (string.IsNullOrWhiteSpace(userId))
-            return Result<IEnumerable<GetCategoriesDto>>.Forbidden(new Errors(
+            return Result<PagedResult<GetCategoriesDto>>.Forbidden(new Errors(
                 ErrorCodes.Forbidden, "UserId is Required"));
 
-        List<GetCategoriesDto> categories = await context.Categories
+        PagedResult<GetCategoriesDto> categories = await context.Categories
             .AsNoTracking()
             .Where(c => c.UserId == userId)
             .Select(c => new GetCategoriesDto(
                 c.CategoryId,
                 c.Name,
-                c.Type.ToString())).ToListAsync();
+                c.Type.ToString()))
+            .ToPagedResult<GetCategoriesDto>(paginationParameters);
 
-        return Result<IEnumerable<GetCategoriesDto>>.Success(categories);
+        return Result<PagedResult<GetCategoriesDto>>.Success(categories);
     }
 
     public async Task<Result<GetCategoryDto>> GetCategoryAsync(int categoryId)

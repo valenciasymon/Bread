@@ -13,7 +13,7 @@ public class AuthController(IUserServices userServices) : BaseApiController
 {
     [HttpPost("register")]
     public async Task<ActionResult<RegisteredUserDto>> RegisterUser(
-        [FromBody]RegisterUserDto registerUserDto)
+        [FromBody] RegisterUserDto registerUserDto)
     {
         Result<RegisteredUserDto> result = await userServices.RegisterUserAsync(registerUserDto);
 

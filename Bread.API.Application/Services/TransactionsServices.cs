@@ -1,6 +1,8 @@
 ﻿using Bread.API.Application.Contracts;
 using Bread.API.Application.Dtos.TransactionsDto;
 using Bread.API.Common.Constants;
+using Bread.API.Common.Models.Extensions;
+using Bread.API.Common.Models.Paging;
 using Bread.API.Common.Results;
 using Bread.API.Domain;
 using Bread.API.Domain.Enum;
@@ -19,13 +21,14 @@ public class TransactionsServices(
         FindFirst(JwtRegisteredClaimNames.Sub)?.Value
         ?? httpContext.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
         ?? string.Empty;
-    public async Task<Result<IEnumerable<GetTransactionsDto>>> GetTransactionsAsync()
+    public async Task<Result<PagedResult<GetTransactionsDto>>> GetTransactionsAsync(
+        PaginationParameters paginationParameters)
     {
         if (string.IsNullOrWhiteSpace(userId))
-            return Result<IEnumerable<GetTransactionsDto>>.Forbidden(new Errors(
+            return Result<PagedResult<GetTransactionsDto>>.Forbidden(new Errors(
                 ErrorCodes.Forbidden, "UserId is Required"));
 
-        List<GetTransactionsDto> transactions = await context.Transactions
+        PagedResult<GetTransactionsDto> transactions = await context.Transactions
             .AsNoTracking()
             .Where(t => t.UserId == userId)
             .Select(t => new GetTransactionsDto(
@@ -34,9 +37,10 @@ public class TransactionsServices(
                 t.Date,
                 t.CategoryId,
                 t.Category!.Name,
-                t.CreatedAtUtc)).ToListAsync();
+                t.CreatedAtUtc))
+            .ToPagedResult<GetTransactionsDto>(paginationParameters);
 
-        return Result<IEnumerable<GetTransactionsDto>>.Success(transactions);
+        return Result<PagedResult<GetTransactionsDto>>.Success(transactions);
     }
 
     public async Task<Result<GetTransactionsDto>> GetTransactionAsync(int transactionId)

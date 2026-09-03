@@ -1,5 +1,5 @@
 @Bread.API_HostAddress = https://localhost:7209
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMjg0NzYxNS0yN2E5LTQ2NmQtOTUyZC1kN2U1ZGEwYjFkNTAiLCJlbWFpbCI6ImFkbWluc3ltb25AZ21haWwuY29tIiwianRpIjoiY2E1NjFjZTItZjc4NS00ZTIzLWEyNmUtM2Q3ZWEwNjA0MDliIiwibmFtZSI6InN5bW9uIG1vbm1vbiIsInVzZXJuYW1lIjoiR29kbHkiLCJpYXQiOjE3ODcwNTQ1MTgsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg3MDU4MTE4LCJpc3MiOiJCcmVhZC5BUEkiLCJhdWQiOiJCcmVhZC5BUEkuQ2xpZW50In0.pSZFPpWOySgitOaHjI9wYw4qA0AuS8hb3HHafo4jWs0
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMjg0NzYxNS0yN2E5LTQ2NmQtOTUyZC1kN2U1ZGEwYjFkNTAiLCJlbWFpbCI6ImFkbWluc3ltb25AZ21haWwuY29tIiwianRpIjoiZjljYTZkMjItMDIzZi00ZGIzLWExZDYtOTQxN2NiMmYxOWJlIiwibmFtZSI6InN5bW9uIG1vbm1vbiIsInVzZXJuYW1lIjoiR29kbHkiLCJpYXQiOjE3ODg0MjU3MjEsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg4NDI5MzIxLCJpc3MiOiJCcmVhZC5BUEkiLCJhdWQiOiJCcmVhZC5BUEkuQ2xpZW50In0.cLWR6KgXVw42F0-KNOiBVfZDHm-hNRKyg-cJAET1rng
 
 ### Register
 POST {{Bread.API_HostAddress}}/api/auth/register
@@ -140,5 +140,26 @@ GET {{Bread.API_HostAddress}}/api/dashboard
 Authorization : Bearer {{token}}
 
 ###
-GET {{Bread.API_HostAddress}}/api/admindashboard
+GET {{Bread.API_HostAddress}}/api/admindashboard/summary
 Authorization : Bearer {{token}}
+
+###
+GET {{Bread.API_HostAddress}}/api/admindashboard/users
+Authorization : Bearer {{token}}
+
+###
+GET {{Bread.API_HostAddress}}/api/admindashboard/audits
+Authorization : Bearer {{token}}
+
+###
+
+PATCH {{Bread.API_HostAddress}}/api/admindashboard/ab4b4c13-6ac8-4d32-bbb2-93697e61f1cb
+Authorization : Bearer {{token}}
+Content-Type: application/json-patch+json
+[
+    {
+        "op": "replace",
+        "path": "/isActive",
+        "value": true
+    }
+]

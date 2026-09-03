@@ -1,12 +1,19 @@
-﻿using Bread.API.Application.Contracts;
+﻿using Azure;
+using Bread.API.Application.Contracts;
 using Bread.API.Application.Dtos.AdminDto;
+using Bread.API.Application.Dtos.AuthDto;
 using Bread.API.Common.Constants;
+using Bread.API.Common.Models.Extensions;
+using Bread.API.Common.Models.Paging;
 using Bread.API.Common.Results;
 using Bread.API.Domain;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Transactions;
 
 namespace Bread.API.Application.Services;
 
@@ -20,7 +27,7 @@ public class AdminDashBoardServices(
         ?? httpContext.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
         ?? string.Empty;
 
-    private async Task<Result<GetAdminSummaryDto>> GetAdminSummaryAsync()
+    public async Task<Result<GetAdminSummaryDto>> GetAdminSummaryAsync()
     {
         if (string.IsNullOrWhiteSpace(adminId))
             return Result<GetAdminSummaryDto>.Forbidden(new Errors(
@@ -49,110 +56,165 @@ public class AdminDashBoardServices(
         return Result<GetAdminSummaryDto>.Success(summary);
     }
 
-    public async Task<Result<IEnumerable<GetUsersAdminDto>>> GetUsersAdminAsync()
+    public async Task<Result<PagedResult<GetUsersAdminDto>>> GetUsersAdminAsync(
+        PaginationParameters paginationParameters)
     {
         if (string.IsNullOrWhiteSpace(adminId))
-            return Result<IEnumerable<GetUsersAdminDto>>.Forbidden(new Errors(
+            return Result<PagedResult<GetUsersAdminDto>>.Forbidden(new Errors(
                 ErrorCodes.Forbidden, "UserIs is Required"));
 
-        List<GetUsersAdminDto> userList = await authContext.Users
+        PagedResult<GetUsersAdminDto> userList = await authContext.Roles
             .AsNoTracking()
+            .Where(r => r.Name == RolesConstants.User)
             .Join(authContext.UserRoles,
-                user => user.Id,
-                userRole => userRole.UserId,
-                (user, userRole) => new { user, userRole })
-            .Join(authContext.Roles,
-                combined => combined.userRole.RoleId,
                 role => role.Id,
-                (combined, role) => new GetUsersAdminDto(
-                    combined.user.FullName,
-                    combined.user.Email!,
-                    role.Name!,
-                    combined.user.IsActive ? "Active" : "NotActive",
-                    combined.user.CreatedAtUtc))
-            .ToListAsync();
+                userRole => userRole.RoleId,
+                (role, userRole) => new { role, userRole })
+            .Join(authContext.Users,
+                combined => combined.userRole.UserId,
+                user => user.Id,
+                (combined, user) => new GetUsersAdminDto(
+                    user.Id,
+                    user.FullName,
+                    user.Email!,
+                    combined.role.Name!,
+                    user.IsActive ? "Active" : "NotActive",
+                    user.CreatedAtUtc))
+            .ToPagedResult<GetUsersAdminDto>(paginationParameters);
 
-        return Result<IEnumerable<GetUsersAdminDto>>.Success(userList);
+        return Result<PagedResult<GetUsersAdminDto>>.Success(userList);
     }
 
-    public async Task<Result<GetUsersAdminDto>> GetUserAdminAsync(string userId)
+
+    public async Task<Result> PatchStatusAdmin(
+        string userId,
+        JsonPatchDocument<UpdateUserDto> patchDoc)
     {
         if (string.IsNullOrWhiteSpace(adminId))
-            return Result<GetUsersAdminDto>.Forbidden(new Errors(
+            return Result.Forbidden(new Errors(
                 ErrorCodes.Forbidden, "UserId is Required"));
 
-        GetUsersAdminDto? user = await authContext.Users
-            .AsNoTracking()
+        ApplicationUser? user = await authContext.Users
             .Where(u => u.Id == userId)
-            .Join(authContext.UserRoles,
-                user => user.Id,
-                userRole => userRole.UserId,
-                (user, userRole) => new { user, userRole })
-            .Join(authContext.Roles,
-                combined => combined.userRole.RoleId,
-                role => role.Id,
-                (combined, role) => new GetUsersAdminDto(
-                    combined.user.FullName,
-                    combined.user.Email!,
-                    role.Name!,
-                    combined.user.IsActive ? "Active" : "NotActive",
-                    combined.user.CreatedAtUtc))
             .FirstOrDefaultAsync();
 
-        return user == null
-            ? Result<GetUsersAdminDto>.NotFound(new Errors(ErrorCodes.NotFound, "User Not Found"))
-            : Result<GetUsersAdminDto>.Success(user);
+        if (user == null)
+            return Result.NotFound(new Errors(
+                ErrorCodes.NotFound, "User Not Found"));
+
+        foreach (var operation in patchDoc.Operations)
+        {
+            if (operation.path != "/isActive" || operation.OperationType != OperationType.Replace)
+                return Result.BadRequest(new Errors(
+                    ErrorCodes.BadRequest, "Wrong PatchDoc Format"));
+        }
+
+        try
+        {
+            //retry strategy
+            var strategy = breadContext.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
+            {
+                //db temp saving point
+                using TransactionScope scope = new TransactionScope(
+                TransactionScopeAsyncFlowOption.Enabled);
+
+                UpdateUserDto updateUserDto = new UpdateUserDto(
+                    user.Id,
+                    user.IsActive);
+
+                patchDoc.ApplyTo(updateUserDto);
+
+                if (user.Id != updateUserDto.UserId)
+                    return Result.BadRequest(new Errors(
+                        ErrorCodes.BadRequest, "Cannot Change UserId"));
+
+                user.IsActive = updateUserDto.IsActive;
+
+                AuditLog auditLog = new AuditLog
+                {
+                    UserId = adminId,
+                    Action = user.IsActive ? AuditActions.Activated : AuditActions.Deactivated,
+                    Details = $"{AuditDetails.User}{userId}"
+                };
+
+                await breadContext.AuditLogs.AddAsync(auditLog);
+                await breadContext.SaveChangesAsync();
+                await authContext.SaveChangesAsync();
+
+                scope.Complete();
+
+                return Result.Success();
+            });
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if(! await authContext.Users.AnyAsync(u => u.Id == userId))
+            {
+                return Result.NotFound(new Errors(
+                    ErrorCodes.NotFound,"User Not Found"));
+            }
+            else
+            {
+                throw;
+            }
+        }
+        catch (Exception)
+        {
+            return Result.Failure(new Errors(
+                ErrorCodes.Failure,"Unexpected Server Error"));
+        }
     }
 
-    public async Task<Result<IEnumerable<GetAuditLogsDto>>> GetAuditLogsAdminAsync()
+
+    public async Task<Result<PagedResult<GetAuditLogsDto>>> GetAuditLogsAdminAsync(
+        PaginationParameters paginationParameters)
     {
         if (string.IsNullOrWhiteSpace(adminId))
-            return Result<IEnumerable<GetAuditLogsDto>>.Forbidden(new Errors(
+            return Result<PagedResult<GetAuditLogsDto>>.Forbidden(new Errors(
                 ErrorCodes.Forbidden, "UserId is Required"));
 
-        List<AuditLog> auditLogs = await breadContext.AuditLogs
+        PagedResult<AuditLog> auditLogs = await breadContext.AuditLogs
             .AsNoTracking()
+            .ToPagedResult<AuditLog>(paginationParameters);
+
+        var users = await authContext.Users
+            .AsNoTracking()
+            .Join(authContext.UserRoles,
+                user => user.Id,
+                userRoles => userRoles.UserId,
+                (user, userRoles) => new { user, userRoles })
+            .Join(authContext.Roles,
+                combined => combined.userRoles.RoleId,
+                role => role.Id,
+                (combined, role) => new
+                {
+                    UserId = combined.user.Id,
+                    FullName = combined.user.FullName,
+                    role
+                })
             .ToListAsync();
 
-        List<ApplicationUser> applicationUsers = await authContext.Users
-            .AsNoTracking()
-            .ToListAsync();
-
-        List<GetAuditLogsDto> auditList = auditLogs.Join(applicationUsers,
-            audit => audit.UserId,
-            user => user.Id,
-            (audit, user) => new GetAuditLogsDto(
-                user.FullName,
-                audit.Action,
-                audit.Details,
-                audit.CreatedAtUtc))
+        List<GetAuditLogsDto> mergeList = auditLogs.Data
+            .Join(users,
+                audits => audits.UserId,
+                user => user.UserId,
+                (audits, user) => new GetAuditLogsDto(
+                    audits.AuditLogId,
+                    user.FullName,
+                    user.role.Name!,
+                    audits.Action,
+                    audits.Details,
+                    audits.CreatedAtUtc))
             .ToList();
 
-        return Result<IEnumerable<GetAuditLogsDto>>.Success(auditList);
-    }
+        PagedResult<GetAuditLogsDto> auditList = new PagedResult<GetAuditLogsDto>
+        {
+            Data = mergeList,
+            MetaData = auditLogs.MetaData
+        };
 
-    public async Task<Result<GetAdminDashBoardDto>> GetDashBoardAsync()
-    {
-        Result<GetAdminSummaryDto> summary = await GetAdminSummaryAsync();
-
-        Result<IEnumerable<GetUsersAdminDto>> users = await GetUsersAdminAsync();
-
-        Result<IEnumerable<GetAuditLogsDto>> audits = await GetAuditLogsAdminAsync();
-
-        if (!summary.Succeeded)
-            return Result<GetAdminDashBoardDto>.Failure(summary.Errors);
-
-        if (!users.Succeeded)
-            return Result<GetAdminDashBoardDto>.Failure(users.Errors);
-
-        if (!audits.Succeeded)
-            return Result<GetAdminDashBoardDto>.Failure(audits.Errors);
-
-        GetAdminDashBoardDto getAdminDashBoardDto = new GetAdminDashBoardDto(
-            summary.Value!,
-            users.Value!.ToList(),
-            audits.Value!.ToList());
-
-        return Result<GetAdminDashBoardDto>.Success(getAdminDashBoardDto);
+        return Result<PagedResult<GetAuditLogsDto>>.Success(auditList);
     }
 }

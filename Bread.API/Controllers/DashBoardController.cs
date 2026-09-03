@@ -1,5 +1,6 @@
 ﻿using Bread.API.Application.Contracts;
 using Bread.API.Application.Dtos.DashBoardDto;
+using Bread.API.AuthorizationFilters;
 using Bread.API.Common.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ namespace Bread.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[RequireActiveUser]
 [Authorize]
 public class DashBoardController(IDashBoardServices dashBoardServices) : BaseApiController
 {

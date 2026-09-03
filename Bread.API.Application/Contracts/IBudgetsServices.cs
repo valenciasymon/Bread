@@ -1,4 +1,5 @@
 ﻿using Bread.API.Application.Dtos.BudgetsDto;
+using Bread.API.Common.Models.Paging;
 using Bread.API.Common.Results;
 
 namespace Bread.API.Application.Contracts
@@ -8,7 +9,8 @@ namespace Bread.API.Application.Contracts
         Task<Result<GetBudgetsDto>> CreateBudgetAsync(CreateBudgetDto createBudgetDto);
         Task<Result> DeleteBudgetAsync(int budgetId);
         Task<Result<GetBudgetsDto>> GetBudgetAsync(int budgetId);
-        Task<Result<IEnumerable<GetBudgetsDto>>> GetBudgetsAsync();
+        Task<Result<PagedResult<GetBudgetsDto>>> GetBudgetsAsync(
+            PaginationParameters paginationParameters);
         Task<Result> UpdateBudgetAsync(int budgetId, UpdateBudgetDto updateBudgetDto);
     }
 }

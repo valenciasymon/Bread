@@ -1,6 +1,8 @@
 ﻿using Bread.API.Application.Contracts;
 using Bread.API.Application.Dtos.BudgetsDto;
 using Bread.API.Common.Constants;
+using Bread.API.Common.Models.Extensions;
+using Bread.API.Common.Models.Paging;
 using Bread.API.Common.Results;
 using Bread.API.Domain;
 using Bread.API.Domain.Enum;
@@ -20,13 +22,14 @@ public class BudgetsServices(
         ?? httpContext.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value 
         ?? string.Empty;
 
-    public async Task<Result<IEnumerable<GetBudgetsDto>>> GetBudgetsAsync()
+    public async Task<Result<PagedResult<GetBudgetsDto>>> GetBudgetsAsync(
+        PaginationParameters paginationParameters)
     {
         if (string.IsNullOrWhiteSpace(userId))
-            return Result<IEnumerable<GetBudgetsDto>>.Forbidden(new Errors(
+            return Result<PagedResult<GetBudgetsDto>>.Forbidden(new Errors(
                 ErrorCodes.Forbidden, "UserId is Required"));
 
-        List<GetBudgetsDto> budgets = await context.Budgets
+        PagedResult<GetBudgetsDto> budgets = await context.Budgets
             .AsNoTracking()
             .Where(b => b.UserId == userId)
             .Select(b => new GetBudgetsDto(
@@ -35,9 +38,10 @@ public class BudgetsServices(
                 b.Month,
                 b.Year,
                 b.CategoryId,
-                b.Category!.Name)).ToListAsync();
+                b.Category!.Name))
+            .ToPagedResult<GetBudgetsDto>(paginationParameters);
 
-        return Result<IEnumerable<GetBudgetsDto>>.Success(budgets);
+        return Result<PagedResult<GetBudgetsDto>>.Success(budgets);
     }
 
     public async Task<Result<GetBudgetsDto>> GetBudgetAsync(int budgetId)
