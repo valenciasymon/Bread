@@ -1,6 +1,7 @@
 ﻿using Bread.API.Application.Contracts;
 using Bread.API.Application.Dtos.TransactionsDto;
 using Bread.API.AuthorizationFilters;
+using Bread.API.Common.Models.Filtering;
 using Bread.API.Common.Models.Paging;
 using Bread.API.Common.Results;
 using Microsoft.AspNetCore.Authorization;
@@ -16,10 +17,13 @@ public class TransactionsController(ITransactionsServices transactionsServices) 
 {
     [HttpGet]
     public async Task<ActionResult<PagedResult<GetTransactionsDto>>> GetTransactions(
-        [FromQuery]PaginationParameters paginationParameters)
+        [FromQuery] PaginationParameters paginationParameters,
+        [FromQuery] TransactionsFilterParameters filterParameters)
     {
         Result<PagedResult<GetTransactionsDto>> result = await
-            transactionsServices.GetTransactionsAsync(paginationParameters);
+            transactionsServices.GetTransactionsAsync(
+                paginationParameters,
+                filterParameters);
 
         return ToActionResult(result);
     }

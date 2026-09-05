@@ -2,6 +2,7 @@
 using Bread.API.Application.Dtos.TransactionsDto;
 using Bread.API.Common.Constants;
 using Bread.API.Common.Models.Extensions;
+using Bread.API.Common.Models.Filtering;
 using Bread.API.Common.Models.Paging;
 using Bread.API.Common.Results;
 using Bread.API.Domain;
@@ -22,15 +23,42 @@ public class TransactionsServices(
         ?? httpContext.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
         ?? string.Empty;
     public async Task<Result<PagedResult<GetTransactionsDto>>> GetTransactionsAsync(
-        PaginationParameters paginationParameters)
+        PaginationParameters paginationParameters,
+        TransactionsFilterParameters filterParameters)
     {
         if (string.IsNullOrWhiteSpace(userId))
             return Result<PagedResult<GetTransactionsDto>>.Forbidden(new Errors(
                 ErrorCodes.Forbidden, "UserId is Required"));
 
-        PagedResult<GetTransactionsDto> transactions = await context.Transactions
+        IQueryable<Transactions> query = context.Transactions
+            .Where(t => t.UserId == userId);
+
+        if (filterParameters.MinAmount.HasValue)
+            query = query.Where(t => t.Amount >= filterParameters.MinAmount);
+
+        if (filterParameters.MaxAmount.HasValue)
+            query = query.Where(t => t.Amount <= filterParameters.MaxAmount);
+
+        if (filterParameters.DateFrom.HasValue)
+            query = query.Where(t => t.Date >= filterParameters.DateFrom);
+
+        if (filterParameters.DateTo.HasValue)
+            query = query.Where(t => t.Date <= filterParameters.DateTo);
+
+
+        query = filterParameters.SortBy?.Trim().ToLowerInvariant() switch
+        {
+            "amount" => filterParameters.SortDescending
+                ? query.OrderByDescending(t => t.Amount)
+                : query.OrderBy(t => t.Amount),
+            "date" => filterParameters.SortDescending
+                ? query.OrderByDescending(t => t.Amount)
+                : query.OrderBy(t => t.Amount),
+            _ => query.OrderBy(t => t.Date)
+        };
+
+        PagedResult<GetTransactionsDto> transactions = await query
             .AsNoTracking()
-            .Where(t => t.UserId == userId)
             .Select(t => new GetTransactionsDto(
                 t.TransactionId,
                 t.Amount,

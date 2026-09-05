@@ -4,6 +4,7 @@ using Bread.API.Application.Dtos.AuthDto;
 using Bread.API.Application.Dtos.DashBoardDto;
 using Bread.API.AuthorizationFilters;
 using Bread.API.Common.Constants;
+using Bread.API.Common.Models.Filtering;
 using Bread.API.Common.Models.Paging;
 using Bread.API.Common.Results;
 using Microsoft.AspNetCore.Authorization;
@@ -20,7 +21,7 @@ namespace Bread.API.Controllers;
 public class AdminDashBoardController(IAdminDashBoardServices adminServices) : BaseApiController
 {
     [HttpGet("summary")]
-    public async Task<ActionResult<GetAdminDashBoardDto>> GetAdminSummary()
+    public async Task<ActionResult<GetAdminSummaryDto>> GetAdminSummary()
     {
         Result<GetAdminSummaryDto> result = await adminServices.GetAdminSummaryAsync();
 
@@ -29,20 +30,22 @@ public class AdminDashBoardController(IAdminDashBoardServices adminServices) : B
 
     [HttpGet("users")]
     public async Task<ActionResult<IEnumerable<GetUsersAdminDto>>> GetUsers(
-        [FromQuery]PaginationParameters paginationParameters)
+        [FromQuery] PaginationParameters paginationParameters,
+        [FromQuery] UsersFilterParameters filterParameters)
     {
         Result<PagedResult<GetUsersAdminDto>> result = await adminServices.GetUsersAdminAsync(
-            paginationParameters);
+            paginationParameters, filterParameters);
 
         return ToActionResult(result);
     }
 
     [HttpGet("audits")]
     public async Task<ActionResult<PagedResult<GetAuditLogsDto>>> GetAudits(
-        [FromQuery] PaginationParameters paginationParameters)
+        [FromQuery] PaginationParameters paginationParameters,
+        [FromQuery] AuditsFilterParameters filterParameters)
     {
         Result<PagedResult<GetAuditLogsDto>> result = await adminServices.GetAuditLogsAdminAsync(
-            paginationParameters);
+            paginationParameters, filterParameters);
 
         return ToActionResult(result);
     }

@@ -1,6 +1,7 @@
 ﻿using Bread.API.Application.Contracts;
 using Bread.API.Application.Dtos.CategoriesDto;
 using Bread.API.AuthorizationFilters;
+using Bread.API.Common.Models.Filtering;
 using Bread.API.Common.Models.Paging;
 using Bread.API.Common.Results;
 using Microsoft.AspNetCore.Authorization;
@@ -16,10 +17,11 @@ public class CategoriesController(ICategoriesServices categoriesServices) : Base
 {
     [HttpGet]
     public async Task<ActionResult<PagedResult<GetCategoriesDto>>> GetCategories(
-        [FromQuery]PaginationParameters paginationParameters)
+        [FromQuery] PaginationParameters paginationParameters,
+        [FromQuery] CategoriesFilterParameters filterParameters)
     {
         Result<PagedResult<GetCategoriesDto>> result = await
-           categoriesServices.GetCategoriesAsync(paginationParameters);
+           categoriesServices.GetCategoriesAsync(paginationParameters, filterParameters);
 
         return ToActionResult<PagedResult<GetCategoriesDto>>(result);
     }

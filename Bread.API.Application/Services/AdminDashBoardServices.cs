@@ -4,10 +4,12 @@ using Bread.API.Application.Dtos.AdminDto;
 using Bread.API.Application.Dtos.AuthDto;
 using Bread.API.Common.Constants;
 using Bread.API.Common.Models.Extensions;
+using Bread.API.Common.Models.Filtering;
 using Bread.API.Common.Models.Paging;
 using Bread.API.Common.Results;
 using Bread.API.Domain;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.EntityFrameworkCore;
@@ -57,13 +59,14 @@ public class AdminDashBoardServices(
     }
 
     public async Task<Result<PagedResult<GetUsersAdminDto>>> GetUsersAdminAsync(
-        PaginationParameters paginationParameters)
+        PaginationParameters paginationParameters,
+        UsersFilterParameters filterParameters)
     {
         if (string.IsNullOrWhiteSpace(adminId))
             return Result<PagedResult<GetUsersAdminDto>>.Forbidden(new Errors(
                 ErrorCodes.Forbidden, "UserIs is Required"));
 
-        PagedResult<GetUsersAdminDto> userList = await authContext.Roles
+        var query = authContext.Roles
             .AsNoTracking()
             .Where(r => r.Name == RolesConstants.User)
             .Join(authContext.UserRoles,
@@ -73,13 +76,31 @@ public class AdminDashBoardServices(
             .Join(authContext.Users,
                 combined => combined.userRole.UserId,
                 user => user.Id,
-                (combined, user) => new GetUsersAdminDto(
-                    user.Id,
-                    user.FullName,
-                    user.Email!,
-                    combined.role.Name!,
-                    user.IsActive ? "Active" : "NotActive",
-                    user.CreatedAtUtc))
+                (combined, user) => new { combined, user });
+
+        if (filterParameters.IsActive.HasValue)
+            query = query.Where(a => a.user.IsActive == filterParameters.IsActive.Value);
+
+        if (!string.IsNullOrWhiteSpace(filterParameters.Search))
+            query = query.Where(a => EF.Functions.Like(
+                a.user.FullName,$"%{filterParameters.Search.Trim()}%"));
+
+        query = filterParameters.SortBy?.Trim().ToLowerInvariant() switch
+        {
+            "name" => filterParameters.SortDescending
+                ? query.OrderByDescending(a => a.user.LastName)
+                : query.OrderBy(a => a.user.LastName),
+            _ => query.OrderBy(a => a.user.LastName)
+        };
+
+        PagedResult<GetUsersAdminDto> userList = await query
+            .Select(a => new GetUsersAdminDto(
+                a.user.Id,
+                a.user.FullName,
+                a.user.Email!,
+                a.combined.role.Name!,
+                a.user.IsActive ? "Active" : "NotActive",
+                a.user.CreatedAtUtc))
             .ToPagedResult<GetUsersAdminDto>(paginationParameters);
 
         return Result<PagedResult<GetUsersAdminDto>>.Success(userList);
@@ -169,18 +190,42 @@ public class AdminDashBoardServices(
 
 
     public async Task<Result<PagedResult<GetAuditLogsDto>>> GetAuditLogsAdminAsync(
-        PaginationParameters paginationParameters)
+        PaginationParameters paginationParameters,
+        AuditsFilterParameters filterParameters)
     {
         if (string.IsNullOrWhiteSpace(adminId))
             return Result<PagedResult<GetAuditLogsDto>>.Forbidden(new Errors(
                 ErrorCodes.Forbidden, "UserId is Required"));
 
-        PagedResult<AuditLog> auditLogs = await breadContext.AuditLogs
-            .AsNoTracking()
-            .ToPagedResult<AuditLog>(paginationParameters);
+        IQueryable<AuditLog> query = breadContext.AuditLogs;
+
+        if (!string.IsNullOrWhiteSpace(filterParameters.Action))
+        {
+            string action = filterParameters.Action.Trim().ToLowerInvariant();
+            query = query.Where(a => EF.Functions.Like(a.Action.ToLower(),$"%{action}%"));
+        }
+
+        query = filterParameters.SortBy?.Trim().ToLowerInvariant() switch
+        {
+            "action" => filterParameters.SortDescending
+                ? query.OrderByDescending(a => a.Action)
+                : query.OrderBy(a => a.Action),
+            "date" => filterParameters.SortDescending
+                ? query.OrderByDescending(a => a.CreatedAtUtc)
+                : query.OrderBy(a => a.CreatedAtUtc),
+            _ => query.OrderBy(a => a.CreatedAtUtc)
+        };
+
+        PagedResult<AuditLog> auditLogs = await query.ToPagedResult<AuditLog>(paginationParameters);
+
+        List<string> userId = auditLogs.Data
+            .Select(a => a.UserId)
+            .Distinct()
+            .ToList();
 
         var users = await authContext.Users
             .AsNoTracking()
+            .Where(u => userId.Contains(u.Id))
             .Join(authContext.UserRoles,
                 user => user.Id,
                 userRoles => userRoles.UserId,

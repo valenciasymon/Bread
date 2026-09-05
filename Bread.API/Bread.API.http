@@ -1,5 +1,5 @@
 @Bread.API_HostAddress = https://localhost:7209
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMjg0NzYxNS0yN2E5LTQ2NmQtOTUyZC1kN2U1ZGEwYjFkNTAiLCJlbWFpbCI6ImFkbWluc3ltb25AZ21haWwuY29tIiwianRpIjoiZjljYTZkMjItMDIzZi00ZGIzLWExZDYtOTQxN2NiMmYxOWJlIiwibmFtZSI6InN5bW9uIG1vbm1vbiIsInVzZXJuYW1lIjoiR29kbHkiLCJpYXQiOjE3ODg0MjU3MjEsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg4NDI5MzIxLCJpc3MiOiJCcmVhZC5BUEkiLCJhdWQiOiJCcmVhZC5BUEkuQ2xpZW50In0.cLWR6KgXVw42F0-KNOiBVfZDHm-hNRKyg-cJAET1rng
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMjg0NzYxNS0yN2E5LTQ2NmQtOTUyZC1kN2U1ZGEwYjFkNTAiLCJlbWFpbCI6ImFkbWluc3ltb25AZ21haWwuY29tIiwianRpIjoiZjRhNjgzYTQtNzEyOS00ZGFkLWE4ZGMtMWUyN2UyZDk0OGMxIiwibmFtZSI6InN5bW9uIG1vbm1vbiIsInVzZXJuYW1lIjoiR29kbHkiLCJpYXQiOjE3ODg2MTUzMDUsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg4NjE4OTA1LCJpc3MiOiJCcmVhZC5BUEkiLCJhdWQiOiJCcmVhZC5BUEkuQ2xpZW50In0.8eh99uYEmn0IylBFDqXVSWq6l46y07ELJ742DgPcp_A
 
 ### Register
 POST {{Bread.API_HostAddress}}/api/auth/register
@@ -44,7 +44,7 @@ Content-Type: application/json
     "password": "P@ssword123"
 }
 ###
-GET {{Bread.API_HostAddress}}/api/categories
+GET {{Bread.API_HostAddress}}/api/categories?sortdescending=true
 Authorization: Bearer {{token}}
 
 ### Get Categories
@@ -72,7 +72,7 @@ Content-Type: application/json
 }
 
 ###
-GET {{Bread.API_HostAddress}}/api/transactions
+GET {{Bread.API_HostAddress}}/api/transactions?minamount=6000
 Authorization : Bearer {{token}}
 
 ###
@@ -144,11 +144,11 @@ GET {{Bread.API_HostAddress}}/api/admindashboard/summary
 Authorization : Bearer {{token}}
 
 ###
-GET {{Bread.API_HostAddress}}/api/admindashboard/users
+GET {{Bread.API_HostAddress}}/api/admindashboard/users?sortby=name
 Authorization : Bearer {{token}}
 
 ###
-GET {{Bread.API_HostAddress}}/api/admindashboard/audits
+GET {{Bread.API_HostAddress}}/api/admindashboard/audits?
 Authorization : Bearer {{token}}
 
 ###

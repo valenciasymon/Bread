@@ -4,9 +4,11 @@ using Bread.API.Application.Dtos.CategoriesDto;
 using Bread.API.Application.Dtos.TransactionsDto;
 using Bread.API.Common.Constants;
 using Bread.API.Common.Models.Extensions;
+using Bread.API.Common.Models.Filtering;
 using Bread.API.Common.Models.Paging;
 using Bread.API.Common.Results;
 using Bread.API.Domain;
+using Bread.API.Domain.Enum;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
@@ -23,15 +25,40 @@ public class CategoriesServices(
         ?? httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
         ?? string.Empty;
     public async Task<Result<PagedResult<GetCategoriesDto>>> GetCategoriesAsync(
-        PaginationParameters paginationParameters)
+        PaginationParameters paginationParameters,
+        CategoriesFilterParameters filterParameters)
     {
         if (string.IsNullOrWhiteSpace(userId))
             return Result<PagedResult<GetCategoriesDto>>.Forbidden(new Errors(
                 ErrorCodes.Forbidden, "UserId is Required"));
 
-        PagedResult<GetCategoriesDto> categories = await context.Categories
+        IQueryable<Categories> query = context.Categories
+            .Where(c => c.UserId == userId);
+
+        if (!string.IsNullOrWhiteSpace(filterParameters.Type) 
+            && Enum.TryParse<CategoryType>(filterParameters.Type, true,out CategoryType type))
+        {
+            query = query.Where(c => c.Type == type);
+        }
+
+        if (!string.IsNullOrWhiteSpace(filterParameters.Search))
+        {
+            query = query.Where(c => EF.Functions.Like(c.Name, $"%{filterParameters.Search!.Trim()}%"));
+        }
+
+        if (string.Equals(filterParameters.SortBy?.Trim(), "name", StringComparison.OrdinalIgnoreCase))
+        {
+            query = filterParameters.SortDescending
+                ? query.OrderByDescending(c => c.Name)
+                : query.OrderBy(c => c.Name);
+        }
+        else
+        {
+            query = query.OrderBy(c => c.Name);
+        }
+
+        PagedResult<GetCategoriesDto> categories = await query
             .AsNoTracking()
-            .Where(c => c.UserId == userId)
             .Select(c => new GetCategoriesDto(
                 c.CategoryId,
                 c.Name,

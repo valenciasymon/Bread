@@ -1,6 +1,7 @@
 ﻿using Bread.API.Application.Contracts;
 using Bread.API.Application.Dtos.BudgetsDto;
 using Bread.API.AuthorizationFilters;
+using Bread.API.Common.Models.Filtering;
 using Bread.API.Common.Models.Paging;
 using Bread.API.Common.Results;
 using Microsoft.AspNetCore.Authorization;
@@ -16,10 +17,11 @@ public class BudgetsController(IBudgetsServices budgetsServices) : BaseApiContro
 {
     [HttpGet]
     public async Task<ActionResult<PagedResult<GetBudgetsDto>>> GetBudgets(
-        [FromQuery]PaginationParameters paginationParameters)
+        [FromQuery] PaginationParameters paginationParameters,
+        [FromQuery] BudgetsFilterParameters filterParameters)
     {
         Result<PagedResult<GetBudgetsDto>> result = await budgetsServices.GetBudgetsAsync(
-            paginationParameters);
+            paginationParameters, filterParameters);
 
         return ToActionResult(result);
     }

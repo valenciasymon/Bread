@@ -2,6 +2,7 @@
 using Bread.API.Application.Dtos.BudgetsDto;
 using Bread.API.Common.Constants;
 using Bread.API.Common.Models.Extensions;
+using Bread.API.Common.Models.Filtering;
 using Bread.API.Common.Models.Paging;
 using Bread.API.Common.Results;
 using Bread.API.Domain;
@@ -23,15 +24,51 @@ public class BudgetsServices(
         ?? string.Empty;
 
     public async Task<Result<PagedResult<GetBudgetsDto>>> GetBudgetsAsync(
-        PaginationParameters paginationParameters)
+        PaginationParameters paginationParameters,
+        BudgetsFilterParameters filterParameters)
     {
         if (string.IsNullOrWhiteSpace(userId))
             return Result<PagedResult<GetBudgetsDto>>.Forbidden(new Errors(
                 ErrorCodes.Forbidden, "UserId is Required"));
 
-        PagedResult<GetBudgetsDto> budgets = await context.Budgets
+        IQueryable<Budgets> query = context.Budgets
+            .Where(b => b.UserId == userId);
+
+        DateTime currentDate = DateTime.Now;
+
+        if (filterParameters.Month.HasValue)
+        {
+            int year = filterParameters.Year ?? currentDate.Year;
+
+            query = query.Where(b => b.Month == filterParameters.Month
+            && b.Year == year);
+        }
+        else if(filterParameters.Year.HasValue)
+        {
+            query = query.Where(b => b.Year == filterParameters.Year);
+        }
+
+
+        if (!string.IsNullOrWhiteSpace(filterParameters.Search))
+            query = query.Where(b => EF.Functions.Like(
+                b.Category!.Name,
+                $"%{filterParameters.Search.Trim()}%"));
+
+
+        query = filterParameters.SortBy?.Trim().ToLowerInvariant() switch
+        {
+            "amount" => filterParameters.SortDescending 
+                ? query.OrderByDescending(b => b.Amount)
+                : query.OrderBy(b => b.Amount),
+            "name" => filterParameters.SortDescending
+                ? query.OrderByDescending(b => b.Category!.Name)
+                : query.OrderBy(b => b.Category!.Name),
+            _ => query.OrderBy(b => b.Category!.Name)
+        };
+
+
+        PagedResult<GetBudgetsDto> budgets = await query
             .AsNoTracking()
-            .Where(b => b.UserId == userId)
             .Select(b => new GetBudgetsDto(
                 b.BudgetsId,
                 b.Amount,
