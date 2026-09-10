@@ -12,6 +12,7 @@ namespace Bread.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [RequireActiveUser]
+[ValidateSecurityStamp]
 [Authorize]
 public class TransactionsController(ITransactionsServices transactionsServices) : BaseApiController
 {

@@ -12,6 +12,7 @@ namespace Bread.API.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [RequireActiveUser]
+[ValidateSecurityStamp]
 [Authorize]
 public class CategoriesController(ICategoriesServices categoriesServices) : BaseApiController
 {

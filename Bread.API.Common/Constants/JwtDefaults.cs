@@ -3,4 +3,5 @@
 public static class JwtDefaults
 {
     public const string AuthenticationScheme = "Bearer";
+    public const string SecurityStamp = "securityStamp";
 }

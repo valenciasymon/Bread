@@ -1,5 +1,5 @@
 @Bread.API_HostAddress = https://localhost:7209
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMjg0NzYxNS0yN2E5LTQ2NmQtOTUyZC1kN2U1ZGEwYjFkNTAiLCJlbWFpbCI6ImFkbWluc3ltb25AZ21haWwuY29tIiwianRpIjoiZjRhNjgzYTQtNzEyOS00ZGFkLWE4ZGMtMWUyN2UyZDk0OGMxIiwibmFtZSI6InN5bW9uIG1vbm1vbiIsInVzZXJuYW1lIjoiR29kbHkiLCJpYXQiOjE3ODg2MTUzMDUsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwiZXhwIjoxNzg4NjE4OTA1LCJpc3MiOiJCcmVhZC5BUEkiLCJhdWQiOiJCcmVhZC5BUEkuQ2xpZW50In0.8eh99uYEmn0IylBFDqXVSWq6l46y07ELJ742DgPcp_A
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhYjRiNGMxMy02YWM4LTRkMzItYmJiMi05MzY5N2U2MWYxY2IiLCJlbWFpbCI6InJoaWFuRW1wZXJvckBnbWFpbC5jb20iLCJqdGkiOiI1OTdhYWNmMy0zODIzLTQxZDUtODgyZC1lM2NmYjc2MDFkMGQiLCJuYW1lIjoicmhpYW4gbWFpeW90IiwidXNlcm5hbWUiOiJ5b3R5b3QiLCJzZWN1cml0eVN0YW1wIjoiNlFHWkk3VTNBT0lHWTNUVlZRVjZXNldaVzNQVUFBVDUiLCJpYXQiOjE3ODkwMzc1NDksImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3ODkwNDExNDksImlzcyI6IkJyZWFkLkFQSSIsImF1ZCI6IkJyZWFkLkFQSS5DbGllbnQifQ.zXpNB8lGC3-jBV6ZfYgvl846tRmVQKEYlhHdZUTI_UU
 
 ### Register
 POST {{Bread.API_HostAddress}}/api/auth/register
@@ -30,8 +30,8 @@ POST {{Bread.API_HostAddress}}/api/auth/login
 Content-Type: application/json
 
 {
-    "Email" : "emperorRhian@gmail.com",
-    "Password" : "P@ssword123"
+    "Email" : "rhianEmperor@gmail.com",
+    "Password" : "P@ssword143"
 }
 
 ###
@@ -134,6 +134,35 @@ Content-Type : application/json
     "year":2026,
     "categoryId":1
 }
+
+
+
+###
+#ACCOUNT UPDATE
+PUT {{Bread.API_HostAddress}}/api/account/name
+Authorization : Bearer {{token}}
+Content-Type : application/json
+{
+    "firstname" : "rhian",
+    "lastname" : "maiyot"
+}
+
+###
+PUT {{Bread.API_HostAddress}}/api/account/email
+Authorization : Bearer {{token}}
+Content-Type : application/json
+{
+    "email" : "emperorRhian@gmail.com"
+}
+###
+PUT {{Bread.API_HostAddress}}/api/account/password
+Authorization : Bearer {{token}}
+Content-Type : application/json
+{
+    "currentpassword" : "P@ssword123",
+    "newpassword" : "P@ssword143"
+}
+
 
 ###
 GET {{Bread.API_HostAddress}}/api/dashboard

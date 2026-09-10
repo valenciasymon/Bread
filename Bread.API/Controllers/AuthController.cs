@@ -12,6 +12,7 @@ namespace Bread.API.Controllers;
 public class AuthController(IUserServices userServices) : BaseApiController
 {
     [HttpPost("register")]
+    [AllowAnonymous]
     public async Task<ActionResult<RegisteredUserDto>> RegisterUser(
         [FromBody] RegisterUserDto registerUserDto)
     {
@@ -31,6 +32,7 @@ public class AuthController(IUserServices userServices) : BaseApiController
     }
 
     [HttpPost("login")]
+    [AllowAnonymous]
     public async Task<ActionResult<string>> LoginUser(
         [FromBody]LoginUserDto loginUserDto)
     {
