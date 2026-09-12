@@ -1,6 +1,7 @@
 
 using Bread.API.Application.Contracts;
 using Bread.API.Application.Services;
+using Bread.API.CachePolicy;
 using Bread.API.Common.Constants;
 using Bread.API.Common.Models.Config;
 using Bread.API.Domain;
@@ -98,6 +99,17 @@ namespace Bread.API
             builder.Services.AddScoped<IDashBoardServices, DashBoardServices>();
             builder.Services.AddScoped<IAdminDashBoardServices, AdminDashBoardServices>();
 
+
+            //output Cache
+            builder.Services.AddOutputCache(options =>
+            {
+                options.AddPolicy(CacheConstants.AuthenticatedUserCachingPolicy, builder =>
+                {
+                    builder.AddPolicy<AuthenticatedUserCachingPolicy>()
+                    .SetCacheKeyPrefix(CacheConstants.AuthenticatedUserCachingPolicyTag);
+                }, true);
+            });
+
             builder.Services.AddControllers()
                 .AddNewtonsoftJson()
                 .AddJsonOptions(options =>
@@ -122,6 +134,7 @@ namespace Bread.API
 
             app.UseAuthorization();
 
+            app.UseOutputCache();
 
             app.MapControllers();
 

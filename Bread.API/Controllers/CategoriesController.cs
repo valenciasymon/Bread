@@ -1,11 +1,14 @@
 ﻿using Bread.API.Application.Contracts;
 using Bread.API.Application.Dtos.CategoriesDto;
 using Bread.API.AuthorizationFilters;
+using Bread.API.CachePolicy;
+using Bread.API.Common.Constants;
 using Bread.API.Common.Models.Filtering;
 using Bread.API.Common.Models.Paging;
 using Bread.API.Common.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace Bread.API.Controllers;
 
@@ -17,6 +20,7 @@ namespace Bread.API.Controllers;
 public class CategoriesController(ICategoriesServices categoriesServices) : BaseApiController
 {
     [HttpGet]
+    [OutputCache(PolicyName = CacheConstants.AuthenticatedUserCachingPolicy)]
     public async Task<ActionResult<PagedResult<GetCategoriesDto>>> GetCategories(
         [FromQuery] PaginationParameters paginationParameters,
         [FromQuery] CategoriesFilterParameters filterParameters)
