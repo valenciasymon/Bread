@@ -1,11 +1,13 @@
 ﻿using Bread.API.Application.Contracts;
 using Bread.API.Application.Dtos.BudgetsDto;
 using Bread.API.AuthorizationFilters;
+using Bread.API.Common.Constants;
 using Bread.API.Common.Models.Filtering;
 using Bread.API.Common.Models.Paging;
 using Bread.API.Common.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Bread.API.Controllers;
 
@@ -14,6 +16,7 @@ namespace Bread.API.Controllers;
 [RequireActiveUser]
 [ValidateSecurityStamp]
 [Authorize]
+[EnableRateLimiting(RateLimitingConstants.FixedPolicy)]
 public class BudgetsController(IBudgetsServices budgetsServices) : BaseApiController
 {
     [HttpGet]

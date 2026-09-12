@@ -1,14 +1,20 @@
 ﻿using Bread.API.Application.Dtos.UserCustomsDto;
 using Bread.API.Application.Services;
 using Bread.API.AuthorizationFilters;
+using Bread.API.Common.Constants;
 using Bread.API.Common.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Bread.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[ValidateSecurityStamp]
+[RequireActiveUser]
+[Authorize]
+[EnableRateLimiting(RateLimitingConstants.FixedPolicy)]
 public class AccountController(IUserServices userServices) : BaseApiController
 {
     [HttpPut("name")]

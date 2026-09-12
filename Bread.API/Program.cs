@@ -6,10 +6,13 @@ using Bread.API.Common.Constants;
 using Bread.API.Common.Models.Config;
 using Bread.API.Domain;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 namespace Bread.API
 {
@@ -110,6 +113,90 @@ namespace Bread.API
                 }, true);
             });
 
+
+            //rate limiter
+            builder.Services.AddRateLimiter(options =>
+            {
+                //fixed
+                options.AddFixedWindowLimiter(RateLimitingConstants.FixedPolicy, opt =>
+                {
+                    opt.Window = TimeSpan.FromMinutes(1);
+                    opt.PermitLimit = 50;
+                    opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    opt.QueueLimit = 0;
+                });
+
+                //sliding
+                options.AddPolicy(RateLimitingConstants.PerUserPolicy, context =>
+                {
+                    string userName = context.User?.Identity?.Name ?? RateLimitingConstants.Anon;
+
+                    return RateLimitPartition.GetSlidingWindowLimiter(userName,
+                        _ => new SlidingWindowRateLimiterOptions
+                        {
+                            Window = TimeSpan.FromMinutes(1),
+                            PermitLimit = 50,
+                            SegmentsPerWindow = 6,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                            QueueLimit = 5
+                        });
+                });
+
+                options.AddPolicy(RateLimitingConstants.StrictPolicy, context =>
+                {
+                    string ipAddress = context.Connection.RemoteIpAddress?.ToString()
+                        ?? RateLimitingConstants.Anon;
+
+                    return RateLimitPartition.GetFixedWindowLimiter(ipAddress,
+                        _ => new FixedWindowRateLimiterOptions
+                        {
+                            Window = TimeSpan.FromMinutes(1),
+                            PermitLimit = 10,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                            QueueLimit = 0
+                        });
+                });
+
+
+                //global limiter 
+                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+                {
+                    string ipAddress = context.Connection.RemoteIpAddress?.ToString()
+                        ?? RateLimitingConstants.Unknown;
+
+                    return RateLimitPartition.GetFixedWindowLimiter(ipAddress,
+                        _ => new FixedWindowRateLimiterOptions
+                        {
+                            Window = TimeSpan.FromMinutes(1),
+                            PermitLimit = 200,
+                            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                            QueueLimit = 5
+                        });
+                });
+
+
+                //on reject
+
+                options.OnRejected = async (context, cancellationToken) =>
+                {
+                    if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+                    {
+                        context.HttpContext.Response.Headers.RetryAfter
+                            = retryAfter.TotalSeconds.ToString();
+                    }
+
+                    context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+                    context.HttpContext.Response.ContentType = "application/json";
+
+                    await context.HttpContext.Response.WriteAsJsonAsync(new
+                    {
+                        error = "Too Many Requests",
+                        message = "RateLimit Exceeded. Please Try again Later",
+                        retryAfter = retryAfter.Seconds
+                    },cancellationToken: cancellationToken);
+                };
+            });
+
             builder.Services.AddControllers()
                 .AddNewtonsoftJson()
                 .AddJsonOptions(options =>
@@ -134,6 +221,7 @@ namespace Bread.API
 
             app.UseAuthorization();
 
+            app.UseRateLimiter();
             app.UseOutputCache();
 
             app.MapControllers();

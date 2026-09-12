@@ -10,6 +10,7 @@ using Bread.API.Common.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Bread.API.Controllers;
 
@@ -18,6 +19,8 @@ namespace Bread.API.Controllers;
 [Route("api/[controller]")]
 [RequireActiveUser]
 [Authorize(Roles = RolesConstants.Admin)]
+[ValidateSecurityStamp]
+[EnableRateLimiting(RateLimitingConstants.PerUserPolicy)]
 public class AdminDashBoardController(IAdminDashBoardServices adminServices) : BaseApiController
 {
     [HttpGet("summary")]

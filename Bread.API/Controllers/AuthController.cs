@@ -4,6 +4,7 @@ using Bread.API.Common.Constants;
 using Bread.API.Common.Results;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Bread.API.Controllers;
 
@@ -32,6 +33,7 @@ public class AuthController(IUserServices userServices) : BaseApiController
     }
 
     [HttpPost("login")]
+    [EnableRateLimiting(RateLimitingConstants.StrictPolicy)]
     [AllowAnonymous]
     public async Task<ActionResult<string>> LoginUser(
         [FromBody]LoginUserDto loginUserDto)
