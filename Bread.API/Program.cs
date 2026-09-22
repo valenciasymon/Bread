@@ -5,10 +5,14 @@ using Bread.API.CachePolicy;
 using Bread.API.Common.Constants;
 using Bread.API.Common.Models.Config;
 using Bread.API.Domain;
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -102,7 +106,6 @@ namespace Bread.API
             builder.Services.AddScoped<IDashBoardServices, DashBoardServices>();
             builder.Services.AddScoped<IAdminDashBoardServices, AdminDashBoardServices>();
 
-
             //output Cache
             builder.Services.AddOutputCache(options =>
             {
@@ -113,35 +116,36 @@ namespace Bread.API
                 }, true);
             });
 
-
             //rate limiter
             builder.Services.AddRateLimiter(options =>
             {
                 //fixed
-                options.AddFixedWindowLimiter(RateLimitingConstants.FixedPolicy, opt =>
+                options.AddFixedWindowLimiter(RateLimitingConstants.FixedPolicy, fixedOptions =>
                 {
-                    opt.Window = TimeSpan.FromMinutes(1);
-                    opt.PermitLimit = 50;
-                    opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-                    opt.QueueLimit = 0;
+                    fixedOptions.Window = TimeSpan.FromMinutes(1);
+                    fixedOptions.PermitLimit = 50;
+                    fixedOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    fixedOptions.QueueLimit = 0;
                 });
 
                 //sliding
                 options.AddPolicy(RateLimitingConstants.PerUserPolicy, context =>
                 {
-                    string userName = context.User?.Identity?.Name ?? RateLimitingConstants.Anon;
+                    string userName = context.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                        ?? RateLimitingConstants.Anon;
 
                     return RateLimitPartition.GetSlidingWindowLimiter(userName,
                         _ => new SlidingWindowRateLimiterOptions
                         {
                             Window = TimeSpan.FromMinutes(1),
                             PermitLimit = 50,
-                            SegmentsPerWindow = 6,
+                            SegmentsPerWindow = 5,
                             QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
                             QueueLimit = 5
                         });
                 });
 
+                //strict limiter
                 options.AddPolicy(RateLimitingConstants.StrictPolicy, context =>
                 {
                     string ipAddress = context.Connection.RemoteIpAddress?.ToString()
@@ -174,9 +178,7 @@ namespace Bread.API
                         });
                 });
 
-
                 //on reject
-
                 options.OnRejected = async (context, cancellationToken) =>
                 {
                     if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
@@ -197,6 +199,28 @@ namespace Bread.API
                 };
             });
 
+
+            //healthchecks
+            builder.Services.AddHealthChecks()
+                .AddCheck("self", () => HealthCheckResult.Healthy("Application Is Running!")
+                    , tags: ["api"])
+                .AddDbContextCheck<BreadDbContext>(
+                    name: "Bread Database",
+                    failureStatus: HealthStatus.Unhealthy,
+                    tags: ["db", "sql"])
+                .AddDbContextCheck<AuthDbContext>(
+                    name: "Auth Database",
+                    failureStatus: HealthStatus.Unhealthy,
+                    tags: ["db", "sql"]);
+
+            builder.Services.AddHealthChecksUI(setup =>
+            {
+                setup.SetEvaluationTimeInSeconds(30);
+                setup.MaximumHistoryEntriesPerEndpoint(50);
+                setup.AddHealthCheckEndpoint("Bread API", "/healthz");
+            }).AddInMemoryStorage();
+
+
             builder.Services.AddControllers()
                 .AddNewtonsoftJson()
                 .AddJsonOptions(options =>
@@ -216,6 +240,28 @@ namespace Bread.API
             }
 
             app.UseHttpsRedirection();
+
+            //healthcheck UI
+            app.MapHealthChecks("/healthz", new HealthCheckOptions
+            {
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+            });
+
+            app.MapHealthChecks("/healthz/live", new HealthCheckOptions
+            {
+                Predicate = check => false
+            });
+
+            app.MapHealthChecks("/healthz/ready", new HealthCheckOptions
+            {
+                Predicate = check => check.Tags.Contains("db")
+            });
+
+            app.MapHealthChecksUI(options =>
+            {
+                options.UIPath = "/healthchecks-ui";
+                options.ApiPath = "/healthchecks-api";
+            });
 
             app.UseAuthentication();
 
